@@ -940,11 +940,6 @@ details[open] .chev{transform:rotate(180deg)}
   display:inline-block;margin-top:6px;padding:3px 10px;border-radius:9999px;
   background:#e3f3e5;color:#23874a;font-size:11px;font-weight:700;white-space:nowrap;
 }
-/* centred track that still scrolls safely: auto margins on the ends centre it when it fits and resolve to 0
-   when it overflows (plain justify-content:center would cut off the first card) */
-.testimonials--students .rail > :first-child{margin-left:auto}
-.testimonials--students .rail > :last-child{margin-right:auto}
-
 .faculty{background:#f4f6f0;padding:92px 0}
 .faculty .marquee{margin-top:44px;padding:8px 0}
 .fac{flex:none;width:220px;margin:0;text-align:center}
