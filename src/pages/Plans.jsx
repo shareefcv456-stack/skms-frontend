@@ -93,7 +93,7 @@ export default function Plans() {
   }, []);
 
   return (
-    <section className="bg-[#f3fbe7] pb-24 pt-16 lg:pt-20">
+    <section className="bg-mint pb-24 pt-16 lg:pt-20">
       <div className="mx-auto max-w-[1440px] px-6 lg:px-16">
         <div className="text-center">
           <p className="eyebrow">Enrollment</p>

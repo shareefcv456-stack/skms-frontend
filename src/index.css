@@ -9,7 +9,7 @@
   --color-forest: #2D4A3E;     /* primary brand green */
   --color-sage: #8a9b68;       /* accent */
   --color-sage-deep: #6e7f4e;
-  --color-mint: #f3fbe7;       /* light section background */
+  --color-mint: #fafff3;       /* site background (Figma) */
   --color-stone: #eceee6;
   --color-ink: #1d1f1b;
 }
@@ -27,7 +27,7 @@
 @layer components {
 
 :root{
-  --mint:#f3fbe7;        /* light section bg */
+  --mint:#fafff3;        /* site background (Figma) */
   --stone:#eceee6;       /* grey-green section bg */
   --ink:#1d1f1b;         /* dark section bg */
   --olive:#8a9b68;       /* sage accent */
@@ -45,7 +45,7 @@ html{scroll-behavior:smooth;scroll-padding-top:106px}
 @media (min-width:1024px){html{scroll-padding-top:114px}}
 /* clip, not hidden: hidden turns body into a scroll container and breaks the sticky navbar */
 html,body{overflow-x:clip}
-body{font-family:'Glacial Indifference',system-ui,sans-serif;color:#2f2f2f;-webkit-font-smoothing:antialiased}
+body{background:var(--mint);font-family:'Glacial Indifference',system-ui,sans-serif;color:#2f2f2f;-webkit-font-smoothing:antialiased}
 .font-display{font-family:'Playfair Display',Georgia,serif}
 /* Figma sets the navbar in Grift (Adobe Fonts, not bundled): used where installed, Glacial otherwise */
 .nav-font{font-family:'Grift','Glacial Indifference',system-ui,sans-serif}
@@ -910,12 +910,13 @@ details[open] .chev{transform:rotate(180deg)}
    accents use the brand's forest green. */
 .testimonials--students{
   --forest:#2D4A3E;
-  background:linear-gradient(180deg,#eff1ea 0%,#f6f8f0 45%,#fafff3 100%);
+  background:linear-gradient(180deg,#eff1ea 0%,#fafff3 30%);   /* settles on the site background before the cards */
 }
-.testimonials--students .eyebrow{display:inline-block;padding:6px 14px;border-radius:9999px;background:rgba(45,74,62,.08);color:var(--forest);letter-spacing:.14em}
+.testimonials--students .eyebrow{display:inline-block;padding:6px 20px;border-radius:9999px;background:#e5ebe3;color:#4b5e4d;font-size:12px;font-weight:700;letter-spacing:.1em}
+.testimonials--students .section-head__title{color:#1a251d}
 .tcard--student{
-  background:#fdfdfb;border:1px solid rgba(45,74,62,.06);border-radius:16px;padding:28px 26px;
-  box-shadow:0 12px 32px -14px rgba(45,74,62,.22);
+  background:#fff;border:1px solid rgba(45,74,62,.06);border-radius:16px;padding:28px 26px;
+  box-shadow:0 10px 30px rgba(0,0,0,.04);
 }
 .tcard--student .tcard__stars{color:#f2b01e}
 .tcard--student .tcard__quote::before,.tcard--student .tcard__quote::after{
@@ -928,7 +929,7 @@ details[open] .chev{transform:rotate(180deg)}
 /* sits under the name + role; beats the grey block style of .tcard__by span span */
 .tcard__by .tcard__verified{
   display:inline-block;margin-top:6px;padding:3px 10px;border-radius:9999px;
-  background:rgba(45,74,62,.08);color:var(--forest);font-size:11px;font-weight:600;white-space:nowrap;
+  background:#e3f3e5;color:#23874a;font-size:11px;font-weight:700;white-space:nowrap;
 }
 /* centred track that still scrolls safely: auto margins on the ends centre it when it fits and resolve to 0
    when it overflows (plain justify-content:center would cut off the first card) */
@@ -1036,8 +1037,8 @@ details[open] .chev{transform:rotate(180deg)}
   .testimonials--students .rail{gap:24px;max-width:1320px;margin:44px auto 0;padding:4px 4px 28px}
   .testimonials--students .tcard{
     flex:0 0 300px;width:300px;max-width:300px;min-height:0;
-    background:#fdfdfb;border:1px solid rgba(45,74,62,.06);border-radius:16px;padding:28px 26px;
-    box-shadow:0 12px 32px -14px rgba(45,74,62,.22);
+    background:#fff;border:1px solid rgba(45,74,62,.06);border-radius:16px;padding:28px 26px;
+    box-shadow:0 10px 30px rgba(0,0,0,.04);
   }
 }
 

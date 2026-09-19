@@ -20,7 +20,7 @@ export default function Contact() {
   }
 
   return (
-    <section className="bg-[#f3fbe7] py-20 lg:py-28">
+    <section className="bg-mint py-20 lg:py-28">
       <div className="mx-auto grid max-w-[1440px] gap-14 px-6 lg:grid-cols-[0.85fr_1.15fr] lg:gap-24 lg:px-24">
         <div>
           <h1 className="font-display text-[34px] font-bold tracking-tight sm:text-[42px]">GET IN TOUCH</h1>
