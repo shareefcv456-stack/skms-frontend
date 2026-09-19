@@ -95,10 +95,9 @@ function AboutDark() {
           <p className="about-dark__text">{ABOUT_TEXT}</p>
           <Link className="btn btn--primary about-dark__cta" to="/about">Read More</Link>
           <dl className="stats">
-            <div className="stat"><dt>500+</dt><dd>Enrolled Doctors</dd></div>
+            <div className="stat"><dt>1500+</dt><dd>Q &amp; A</dd></div>
             <div className="stat"><dt>95%</dt><dd>First-Attempt Pass</dd></div>
             <div className="stat"><dt>6</dt><dd>Gulf Countries</dd></div>
-            <div className="stat"><dt>1500+</dt><dd>Practice QN</dd></div>
           </dl>
         </div>
       </div>

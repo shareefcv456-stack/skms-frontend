@@ -526,9 +526,8 @@ details[open] .chev{transform:rotate(180deg)}
 .stats{
   margin:38px 0 0;padding-top:30px;
   border-top:1px solid rgba(255,255,255,.15);
-  display:grid;grid-template-columns:repeat(2,1fr);gap:24px 20px;
+  display:grid;grid-template-columns:repeat(3,1fr);gap:20px;
 }
-@media (min-width:768px){ .stats{grid-template-columns:repeat(4,1fr)} }
 /* Figma: DM Serif Display 30/30 — its lining figures and hairline '+' */
 .stats dt{
   font-family:'DM Serif Display',Georgia,serif;
