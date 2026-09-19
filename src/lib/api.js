@@ -1,5 +1,6 @@
-/* skms-backend client. VITE_API_URL is the Render service; locally the backend runs on :4000. */
-export const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:4000').replace(/\/+$/, '');
+/* skms-backend client. VITE_API_URL picks the API (set it to http://localhost:4000 for a local backend);
+   without it the live Render service is used. */
+export const API_URL = (import.meta.env.VITE_API_URL || 'https://skms-backend.onrender.com').replace(/\/+$/, '');
 
 /* null when the API can't be reached (asleep, offline, timed out), else { ok, status, data }.
    A free Render service takes ~50s to wake, so the default timeout outlasts that. */

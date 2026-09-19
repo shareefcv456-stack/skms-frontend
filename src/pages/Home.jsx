@@ -128,8 +128,8 @@ function Reviews() {
   return <>
     <section className="testimonials">
       <header className="section-head">
-        <p className="eyebrow mb-4 rounded-full bg-[#E5EBE3] px-5 py-1.5 text-xs font-semibold uppercase tracking-widest text-[#4B5E4D]">VERIFIED REVIEWS</p>
-        <h2 className="section-head__title !mt-0 font-display text-3xl font-bold text-[#1A251D] sm:text-4xl lg:text-5xl">What Our Students Say</h2>
+        <p className="eyebrow">TESTIMONIALS</p>
+        <h2 className="section-head__title">Doctors Who Passed</h2>
       </header>
       <div className="rail" id="testimonials">{testimonials.map((t, i) => <Testimonial key={i} t={t} />)}</div>
     </section>
