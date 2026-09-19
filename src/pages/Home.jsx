@@ -61,13 +61,12 @@ function Cases() {
   );
 }
 
-const Course = ({ img, alt, title, reverse, children, rich, cta }) => (
+const Course = ({ img, alt, title, reverse, children, rich, lines }) => (
   <article className={`course${reverse ? ' course--reverse' : ''}`}>
     <figure className="course__media"><img src={img} alt={alt} /></figure>
     <div className="course__body">
       <h2 className="course__title">{title}</h2>
-      <Clamp as={rich ? 'div' : 'p'} className={`course__text${rich ? ' course-rich' : ''}`}>{children}</Clamp>
-      {cta}
+      <Clamp as={rich ? 'div' : 'p'} lines={lines} className={`course__text${rich ? ' course-rich' : ''}`}>{children}</Clamp>
     </div>
   </article>
 );
@@ -78,9 +77,8 @@ function Showcase() {
       <div className="courses__panel">
         <Course img="/img/card-gulf.jpg" alt="Doctor preparing for the Gulf licensing examination at a laptop" title="Gulf Medical Licensing Examinations">{COURSE_COPY.gp}</Course>
         <Course reverse img="/img/card-ai.jpg" alt="AI live patient video session on a laptop beside study notes" title={<>Live patient AI<br />VIDEOS</>}>{COURSE_COPY.ai}</Course>
-        <Course img="/img/card-final.jpg" alt="Final year student reviewing a clinical case video" title="Final Year Practical Exam Demo -AI VIDEOS">{COURSE_COPY.final}</Course>
-        <Course reverse rich img="/img/card-specialist.jpg" alt="Specialist doctor studying for the licensing examination" title="Specialist Gulf Licensing Examination."
-          cta={<div className="course-cta"><Link className="btn btn--primary" to="/plans#specialist">BUY NOW</Link></div>}>{SPECIALIST_COPY}</Course>
+        <Course img="/img/card-final.jpg" alt="Final year student reviewing a clinical case video" title="Final Year Practical Exam Demo -AI VIDEOS" lines={5}>{COURSE_COPY.final}</Course>
+        <Course reverse rich img="/img/card-specialist.jpg" alt="Specialist doctor studying for the licensing examination" title="Specialist Gulf Licensing Examination.">{SPECIALIST_COPY}</Course>
       </div>
     </section>
   );
@@ -97,9 +95,10 @@ function AboutDark() {
           <p className="about-dark__text">{ABOUT_TEXT}</p>
           <Link className="btn btn--primary about-dark__cta" to="/about">Read More</Link>
           <dl className="stats">
-            <div className="stat"><dt>1500+</dt><dd>Enrolled Students</dd></div>
+            <div className="stat"><dt>500+</dt><dd>Enrolled Doctors</dd></div>
             <div className="stat"><dt>95%</dt><dd>First-Attempt Pass</dd></div>
             <div className="stat"><dt>6</dt><dd>Gulf Countries</dd></div>
+            <div className="stat"><dt>1500+</dt><dd>Practice QN</dd></div>
           </dl>
         </div>
       </div>

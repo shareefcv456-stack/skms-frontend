@@ -450,8 +450,6 @@ details[open] .chev{transform:rotate(180deg)}
 .course-rich ul{margin:0;padding-left:20px;list-style:disc}
 .course-rich li{margin-bottom:8px}
 .course-rich li::marker{color:#8a9b68}
-.course-cta{display:flex;flex-wrap:wrap;align-items:center;gap:12px 18px;margin-top:22px}
-.course-cta p{margin:0;font-weight:600;color:#14181c}
 
 @media (max-width:1100px){
   .courses__panel{margin:0 24px;border-radius:32px}
@@ -509,11 +507,13 @@ details[open] .chev{transform:rotate(180deg)}
 .stats{
   margin:38px 0 0;padding-top:30px;
   border-top:1px solid rgba(255,255,255,.15);
-  display:grid;grid-template-columns:repeat(3,1fr);gap:20px;
+  display:grid;grid-template-columns:repeat(2,1fr);gap:24px 20px;
 }
+@media (min-width:768px){ .stats{grid-template-columns:repeat(4,1fr)} }
+/* Figma: DM Serif Display 30/30 — its lining figures and hairline '+' */
 .stats dt{
-  font-family:'Playfair Display',Georgia,serif;
-  font-size:32px;font-weight:700;color:#fff;
+  font-family:'DM Serif Display',Georgia,serif;
+  font-size:30px;line-height:30px;font-weight:400;color:#fff;
 }
 .stats dd{margin:12px 0 0;font-size:17px;color:rgba(255,255,255,.88)}
 

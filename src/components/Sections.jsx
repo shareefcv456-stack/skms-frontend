@@ -18,8 +18,8 @@ export function Rich({ text }) {
   ));
 }
 
-/* 7-line clamp with "See more" — the button only shows when the text is actually cut off (the labels come from CSS) */
-export function Clamp({ as: Tag = 'p', className, children }) {
+/* 7-line clamp (or `lines`) with "See more" — the button only shows when the text is actually cut off (the labels come from CSS) */
+export function Clamp({ as: Tag = 'p', className, lines, children }) {
   const ref = useRef(null);
   const [open, setOpen] = useState(false);
   const [cut, setCut] = useState(false);
@@ -31,7 +31,7 @@ export function Clamp({ as: Tag = 'p', className, children }) {
     return () => removeEventListener('resize', check);
   }, [open]);
   return <>
-    <Tag ref={ref} data-clamp="" className={`${className}${open ? ' is-open' : ''}`}>{children}</Tag>
+    <Tag ref={ref} data-clamp="" style={lines && { WebkitLineClamp: lines }} className={`${className}${open ? ' is-open' : ''}`}>{children}</Tag>
     {(cut || open) && <button type="button" className="see-more" onClick={() => setOpen(o => !o)} />}
   </>;
 }
