@@ -135,7 +135,7 @@ function Reviews() {
     </section>
     <section className="testimonials testimonials--students" aria-labelledby="student-reviews-title">
       <header className="section-head">
-        <p className="eyebrow">Verified Reviews</p>
+        <p className="eyebrow">TESTIMONIALS</p>
         <h2 className="section-head__title" id="student-reviews-title">What Our Students Say</h2>
       </header>
       <div className="rail" id="student-reviews">{reviews.map((r, i) => <StudentReview key={i} r={r} />)}</div>

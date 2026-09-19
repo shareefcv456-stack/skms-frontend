@@ -918,7 +918,7 @@ details[open] .chev{transform:rotate(180deg)}
   --forest:#2D4A3E;
   background:linear-gradient(180deg,#eff1ea 0%,#fafff3 30%);   /* settles on the site background before the cards */
 }
-.testimonials--students .eyebrow{display:inline-block;padding:6px 20px;border-radius:9999px;background:#e5ebe3;color:#4b5e4d;font-size:12px;font-weight:700;letter-spacing:.1em}
+.testimonials--students .eyebrow{display:block;margin:0;color:#738a6e;font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:uppercase}
 .testimonials--students .section-head__title{color:#1a251d}
 .tcard--student{
   background:#fff;border:1px solid rgba(45,74,62,.06);border-radius:16px;padding:28px 26px;
