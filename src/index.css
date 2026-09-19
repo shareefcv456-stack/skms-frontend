@@ -358,8 +358,9 @@ details[open] .chev{transform:rotate(180deg)}
 .quick i,.quick svg{width:20px;height:20px;flex:none;align-self:center}   /* icon stays centred whether the label wraps to one line or two */
 
 @media (min-width:1024px){
-  .hero__quick{position:absolute;right:clamp(1rem,4vw,3.5rem);bottom:clamp(1rem,4vh,3.8rem);margin:0}
-  .btn{font-size:clamp(14px,1.25vw,20px)}
+  .hero{min-height:0;height:calc(100vh - 114px)}
+  .hero__quick{position:absolute;right:clamp(1rem,4vw,3.5rem);bottom:44px;margin:0}
+  .btn{width:clamp(160px,13.7vw,240px);height:clamp(45px,3.7vw,65px);font-size:clamp(14px,1.15vw,20px)}
   /* Figma 195:1944 / 195:1946: DM Serif Display 64/70.4 headline, Grift 18/29.25 solid-white lede */
   .hero__title{font-family:'DM Serif Display',Georgia,serif;font-weight:400}
   .hero__title em{color:#9fb37e}
@@ -367,13 +368,13 @@ details[open] .chev{transform:rotate(180deg)}
 
   /* Figma: sage 20% glass, 16px sides, 12px icon gap, 15/25 two-line label */
   .quick{
-    gap:10px;padding:8px 12px;
+    width:clamp(126px,10.35vw,182px);height:clamp(52px,4.25vw,75px);gap:clamp(8px,0.7vw,12px);padding:8px clamp(10px,0.9vw,16px);
     background:rgba(135,152,107,.2);border-color:rgba(255,255,255,.3);
     -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
-    font-size:clamp(12px,1vw,15px);font-weight:400;line-height:1.35;
+    font-size:clamp(12px,1vw,17px);font-weight:400;line-height:1.35;
   }
   .quick:hover{background:rgba(135,152,107,.34)}
-  .quick i,.quick svg{width:22px;height:22px}
+  .quick i,.quick svg{width:clamp(20px,1.5vw,26px);height:clamp(20px,1.5vw,26px)}
 }
 @media (max-width:1023px){
   .hero__inner{padding:clamp(32px,6vh,56px) 24px}
@@ -381,7 +382,7 @@ details[open] .chev{transform:rotate(180deg)}
 }
 @media (min-width:769px) and (max-height:800px){
   .hero__inner{padding-top:32px;padding-bottom:32px}
-  .hero__quick{right:32px;bottom:24px}
+  .hero__quick{right:32px;bottom:44px}
   .quick{width:126px;height:52px;padding:8px 10px;font-size:12px}
   .quick i,.quick svg{width:20px;height:20px}
 }
@@ -890,25 +891,26 @@ details[open] .chev{transform:rotate(180deg)}
 }
 .section-head__sub{margin:16px 0 0;font-size:16px;line-height:1.7;color:#6b7166}
 
-.testimonials{background:#f4f6f0;padding:92px 0}
+.testimonials{background:#f9f9f4;padding:92px 0}
+.testimonials:not(.testimonials--students){border-bottom:1px solid rgba(30,58,43,.1)}
 .testimonials .rail{margin-top:44px}
 /* testimonial card — Figma component 146:4646. The quote is Grift Italic in the design (a paid font);
    Urbanist Italic stands in: same single-storey italic and the same line breaks at 18px */
 .tcard{
   flex:none;width:351px;display:flex;flex-direction:column;
-  background:#fff;border:.8px solid #e2dfd5;border-radius:16px;padding:32px;
-  box-shadow:0 10px 30px rgba(0,0,0,.04);
+  background:#fff;border:1px solid rgba(229,231,235,.6);border-radius:16px;padding:24px;
+  box-shadow:0 1px 3px rgba(0,0,0,.06);
 }
 .tcard__stars{display:flex;gap:4px;color:#87986b}
 .tcard__stars svg{width:16px;height:16px;fill:currentColor}
 .tcard__stars .is-off{opacity:.25}
-.tcard__quote{margin:20px 0 0;flex:1;font:italic 400 18px/29.25px 'Urbanist',system-ui,sans-serif;color:rgba(0,0,0,.7)}
+.tcard__quote{margin:16px 0 0;flex:1;font:italic 400 14px/1.7 'Urbanist',system-ui,sans-serif;color:rgba(0,0,0,.7)}
 .tcard__by{
-  margin-top:24px;padding-top:20px;border-top:.8px solid #e2dfd5;
+  margin-top:18px;padding-top:14px;border-top:1px solid #e2dfd5;
   display:flex;align-items:center;gap:12px;
 }
 .tcard__avatar{
-  display:grid;place-items:center;width:40px;height:40px;flex:none;
+  display:grid;place-items:center;width:36px;height:36px;flex:none;
   border-radius:50%;background:#eef1e6;color:#87986b;
   font:400 18px/28px 'DM Serif Display',Georgia,serif;
 }
@@ -922,8 +924,8 @@ details[open] .chev{transform:rotate(180deg)}
   --forest:#2D4A3E;
 }
 .tcard--student{
-  background:#fff;border:1px solid rgba(45,74,62,.06);border-radius:16px;padding:28px 26px;
-  box-shadow:0 10px 30px rgba(0,0,0,.04);
+  background:#fff;border:1px solid rgba(229,231,235,.6);border-radius:16px;padding:24px;
+  box-shadow:0 1px 3px rgba(0,0,0,.06);
 }
 .tcard--student .tcard__stars{color:#f2b01e}
 .tcard--student .tcard__quote::before,.tcard--student .tcard__quote::after{
@@ -1011,40 +1013,40 @@ details[open] .chev{transform:rotate(180deg)}
   }
   /* no max-width / auto margins: the track must start at the section's own left gutter */
   .testimonials .rail{
-    display:flex;gap:24px;overflow-x:auto;scroll-snap-type:x mandatory;   /* Figma: 351px cards, 24px apart */
-    margin:44px 0 0;padding:0 0 24px;
+    display:flex;gap:24px;overflow-x:auto;scroll-snap-type:x mandatory;
+    max-width:1320px;margin:44px auto 0;padding:4px 4px 28px;
     -webkit-overflow-scrolling:touch;
   }
   .testimonials .tcard{
-    flex:0 0 351px;width:351px;max-width:351px;min-width:0;box-sizing:border-box;
+    flex:0 0 300px;width:300px;max-width:300px;min-width:0;box-sizing:border-box;
     display:flex;flex-direction:column;justify-content:space-between;
-    min-height:520px;height:auto;max-height:none;overflow:visible;
-    background:#fff;border:.8px solid #e2dfd5;border-radius:16px;padding:32px;
+    height:380px;min-height:0;max-height:380px;overflow:hidden;
+    background:#fff;border:1px solid rgba(229,231,235,.6);border-radius:16px;padding:24px;
+    box-shadow:0 1px 3px rgba(0,0,0,.06);
   }
   .testimonials .tcard__stars{gap:4px}
   .testimonials .tcard__stars svg{width:16px;height:16px}
   .testimonials .tcard__quote{
-    display:block;-webkit-line-clamp:none;overflow:visible;   /* undo the mobile 6-line clamp */
+    display:-webkit-box;-webkit-line-clamp:9;-webkit-box-orient:vertical;overflow:hidden;
     flex:1 1 auto;min-height:0;
-    margin:20px 0 0;
-    font:italic 400 18px/29.25px 'Urbanist',system-ui,sans-serif;color:rgba(0,0,0,.7);
+    margin:16px 0 0;
+    font:italic 400 14px/1.7 'Urbanist',system-ui,sans-serif;color:rgba(0,0,0,.7);
   }
   /* divider 24px under the quote, 20px above the author row, which stays flush to the bottom */
   .testimonials .tcard__by{
-    margin:24px 0 0;padding-top:20px;
-    border-top:.8px solid #e2dfd5;
+    margin:18px 0 0;padding-top:14px;
+    border-top:1px solid #e2dfd5;
   }
 }
 
-/* desktop: symmetric padding and a centred row of 300px cards — four fit side by side from ~1370px, fewer
-   scroll with snap; cards size to their text (the 520px floor above is for the long doctor testimonials) */
+/* desktop: symmetric padding and a centred row of identical 300px cards */
 @media (min-width:1024px){
   .testimonials.testimonials--students{padding:92px 48px}
-  .testimonials--students .rail{gap:24px;max-width:1320px;margin:44px auto 0;padding:4px 4px 28px}
+  .testimonials--students .rail{gap:24px}
   .testimonials--students .tcard{
-    flex:0 0 300px;width:300px;max-width:300px;min-height:0;
-    background:#fff;border:1px solid rgba(45,74,62,.06);border-radius:16px;padding:28px 26px;
-    box-shadow:0 10px 30px rgba(0,0,0,.04);
+    flex:0 0 300px;width:300px;max-width:300px;height:380px;min-height:0;max-height:380px;
+    background:#fff;border:1px solid rgba(229,231,235,.6);border-radius:16px;padding:24px;
+    box-shadow:0 1px 3px rgba(0,0,0,.06);
   }
 }
 
@@ -1103,6 +1105,37 @@ details[open] .chev{transform:rotate(180deg)}
   .site-footer__social{margin-top:20px}
   .site-footer__bottom{margin-top:32px;flex-direction:column;gap:10px}
   .site-footer__bottom p:last-child{gap:20px}
+}
+
+/* Compact desktop canvas: Windows display scaling can leave a 1024-1536px CSS viewport.
+   Keep this isolated above the mobile breakpoint so phones and tablets retain their existing layout. */
+@media (min-width:1024px) and (max-width:1536px){
+  html{font-size:90%}
+
+  .hero{min-height:0;height:calc(100vh - 114px)}
+  .hero__inner{max-width:1280px;min-height:0;height:100%;padding:32px 64px}
+  .hero__title{font-size:clamp(2.25rem,3vw + 1rem,3.5rem)}
+  .hero__lede{max-width:32rem;font-size:1rem}
+  .hero__actions{gap:clamp(14px,1.2vw,22px)}
+  .hero__quick{right:32px;bottom:44px}
+
+  .courses__panel{max-width:1120px}
+  .course{min-height:440px}
+  .course__body{padding:40px 44px}
+
+  .about-dark__inner,.founder__inner{max-width:1160px}
+  .programs__inner{max-width:1160px}
+  .programs__grid{gap:20px}
+  .plan-card{min-height:480px}
+  .plan-grid{max-width:1160px;gap:24px}
+
+  .testimonials{padding-left:32px;padding-right:32px}
+  .testimonials .rail{gap:20px}
+  .testimonials .tcard,.testimonials--students .tcard{flex-basis:280px;width:280px;max-width:280px;padding:24px 22px}
+  .testimonials--students .rail{gap:20px}
+
+  .faq__inner{max-width:900px}
+  .cta__inner{max-width:900px}
 }
 
 @media (max-width:900px){
