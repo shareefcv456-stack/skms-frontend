@@ -41,7 +41,7 @@ export default function Contact() {
           </div>
           <label className="mt-6 block"><span className="mb-2 block text-[14px]">Message</span>
             <textarea name="message" required rows={7} placeholder="write something..." className={`${field} resize-none py-5`} /></label>
-          <button className="btn-grad mt-7 w-full rounded-full py-4 text-[16px]">Send Message</button>
+          <button className="btn-grad mt-7 w-full rounded-full py-4 text-[16px] lg:h-[53px] lg:py-0 lg:text-[20px] lg:!font-normal">Send Message</button>
           {msg && <p role="status" className={`mt-4 text-[14px] ${msg.bad ? 'text-[#c0483f]' : 'text-[#3a8f5c]'}`}>{msg.text}</p>}
         </form>
       </div>

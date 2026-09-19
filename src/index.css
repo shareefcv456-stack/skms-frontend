@@ -54,6 +54,7 @@ body{background:var(--mint);font-family:'Glacial Indifference',system-ui,sans-se
 .btn-grad{
   background:var(--btn-grad);
   color:#fff;font-weight:600;border-radius:9999px;
+  font-family:'Grift','Glacial Indifference',system-ui,sans-serif;
   transition:filter .2s,transform .2s;
 }
 .btn-grad:hover{filter:brightness(1.06);transform:translateY(-1px)}
@@ -318,6 +319,7 @@ details[open] .chev{transform:rotate(180deg)}
   display:inline-flex;align-items:center;justify-content:center;
   width:199px;height:53px;
   border-radius:9999px;
+  font-family:'Grift','Glacial Indifference',system-ui,sans-serif;
   font-size:16px;line-height:25px;
   text-decoration:none;
   transition:filter .2s,transform .2s,background-color .2s;
@@ -359,6 +361,11 @@ details[open] .chev{transform:rotate(180deg)}
   .hero{height:805px}
   .hero__quick{position:absolute;right:56px;bottom:61px;margin:0}
   .btn{font-size:20px}   /* Figma: 20/25 on the 199x53 pills */
+  /* Figma 195:1944 / 195:1946: DM Serif Display 64/70.4 headline, Grift 18/29.25 solid-white lede */
+  .hero__title{font-family:'DM Serif Display',Georgia,serif;font-size:64px;font-weight:400;line-height:70.4px}
+  .hero__title em{color:#9fb37e}
+  .hero__lede{max-width:532px;font-size:18px;line-height:29.25px;color:#fff}
+
   /* Figma: sage 20% glass, 16px sides, 12px icon gap, 15/25 two-line label */
   .quick{
     gap:12px;padding:0 16px;
@@ -1276,4 +1283,11 @@ button.demo__btn:not(.btn--primary):hover{background:#f4f4f0}
   .review-card__stars button{width:48px;height:48px;font-size:24px}
   .review-card__area{height:140px}
 }
+}
+
+/* every pill button on desktop is Figma's 53px / 20px (after the base rules so it wins) */
+@media (min-width:1024px){
+  .demo__btn{width:199px;height:53px;font-size:20px}
+  .review-card__send{height:53px;font-size:20px}
+  .auth-btn{height:53px;font-size:20px;font-weight:400}
 }
