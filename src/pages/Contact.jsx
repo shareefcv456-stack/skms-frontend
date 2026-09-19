@@ -20,8 +20,8 @@ export default function Contact() {
   }
 
   return (
-    <section className="bg-[#f3fbe7] py-20 lg:py-28">
-      <div className="mx-auto grid max-w-[1440px] gap-14 px-6 lg:grid-cols-[0.85fr_1.15fr] lg:gap-24 lg:px-24">
+    <section className="bg-[#f3fbe7] py-20 lg:py-24">
+      <div className="mx-auto grid max-w-[1440px] gap-14 px-6 lg:max-w-7xl lg:grid-cols-[0.85fr_1.15fr] lg:gap-20 lg:px-8">
         <div>
           <h1 className="font-display text-[34px] font-bold tracking-tight sm:text-[42px]">GET IN TOUCH</h1>
           <p className="mt-6 text-[15px] leading-8 text-[#5f5f5f]">Join 1500+ students who trusted Dr. SKM&#39;s Academy to prepare them for Gulf licensing examinations. Structured. Intelligent. Proven.</p>
