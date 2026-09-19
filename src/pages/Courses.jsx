@@ -20,10 +20,8 @@ export default function Courses() {
           <h1 className="course-page__title">{c.title}</h1>
           {c.rich
             ? <div className="course-page__text course-rich">{SPECIALIST_COPY}</div>
-            : <>
-              <p className="course-page__text">{COURSE_COPY[key]}</p>
-              <Link className="btn btn--primary course-page__cta" to={`/plans#${key}`}>View Plans</Link>
-            </>}
+            : <p className="course-page__text">{COURSE_COPY[key]}</p>}
+          <Link className="btn btn--primary course-page__cta" to={`/plans#${key}`}>View Plans</Link>
         </div>
         <figure className="course-page__media"><img src={c.img} alt={c.alt} /></figure>
       </div>

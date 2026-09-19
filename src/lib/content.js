@@ -4,7 +4,7 @@
 export const DEFAULTS = {
   hero: {
     headline: 'Master Clinical\n*Excellence*\nfor Gulf Licensing',   // one row per line, *word* = green italic
-    sub: 'AI-powered clinical learning designed specifically for Gulf licensing examinations. Join 500+ doctors who passed HAAD, DHA, SLE, QCHP and more on their first attempt.',
+    sub: 'AI-powered clinical learning designed specifically for Gulf licensing examinations. Master 1500+ high-yield Q&As and join successful doctors who passed HAAD, DHA, SLE, QCHP on their first attempt.',
     cta1Text: 'Explore Courses', cta1Link: 'courses.html',
     cta2Text: 'View Plans', cta2Link: 'plans.html',
     image: 'img/hero.jpg',
