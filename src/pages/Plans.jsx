@@ -94,10 +94,10 @@ export default function Plans() {
 
   return (
     <section className="bg-[#f3fbe7] pb-24 pt-16 lg:pt-20">
-      <div className="mx-auto max-w-[1440px] px-6 lg:max-w-7xl lg:px-8">
+      <div className="mx-auto max-w-[1440px] px-6 lg:px-16">
         <div className="text-center">
           <p className="eyebrow">Enrollment</p>
-          <h1 className="mt-3 font-display text-[34px] font-bold sm:text-[44px] lg:text-[40px]">Choose Your Plan</h1>
+          <h1 className="mt-3 font-display text-[34px] font-bold sm:text-[44px]">Choose Your Plan</h1>
           <p className="mx-auto mt-5 max-w-[700px] text-[15px] leading-8 text-[#5f5f5f]">Flexible plans for every stage of your medical career — Gulf licensing, specialist examinations, AI clinical learning, and final year preparation.</p>
         </div>
 

@@ -82,11 +82,11 @@ function Header() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-black/[.06] bg-white">
-      <div className="mx-auto flex h-14 max-w-[1440px] items-center gap-4 px-4 min-[769px]:h-[106px] min-[769px]:px-6 lg:h-[114px] lg:px-10 min-[1440px]:px-20">
+      <div className="mx-auto flex h-14 max-w-[1440px] items-center gap-4 px-4 min-[769px]:h-[106px] min-[769px]:px-6 lg:h-[114px] lg:px-10 min-[90rem]:px-20">
         <Link to="/" className="navbar-brand h-11 w-11 shrink-0 min-[769px]:h-[80px] min-[769px]:w-[80px]">
           <img src="/img/logo.png" alt="Dr. SKM's Academy" className="h-full w-full object-contain" />
         </Link>
-        <nav className="ml-10 hidden items-center gap-[11px] text-[18px] lg:flex xl:ml-14 min-[1440px]:ml-[96px]">
+        <nav className="ml-10 hidden items-center gap-[11px] text-[18px] lg:flex xl:ml-14 min-[90rem]:ml-[96px]">
           {NAV.map(item => item[0] !== '/courses' ? link(item) : (
             <div key="courses" className="has-menu relative">
               {link(item)}
