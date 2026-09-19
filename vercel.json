@@ -1,0 +1,7 @@
+{
+  "redirects": [
+    { "source": "/index.html", "destination": "/", "permanent": true },
+    { "source": "/:page(courses|plans|about|contact|demo|faq).html", "destination": "/:page", "permanent": true }
+  ],
+  "rewrites": [{ "source": "/((?!assets/|img/|fonts/).*)", "destination": "/index.html" }]
+}
