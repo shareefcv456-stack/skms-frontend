@@ -32,7 +32,7 @@
   --ink:#1d1f1b;         /* dark section bg */
   --olive:#8a9b68;       /* sage accent */
   --olive-deep:#6e7f4e;  /* cta band */
-  --btn-grad:linear-gradient(180deg,#839d6c 0%,#66ca82 50%,#49f798 100%);  /* Figma: sage -> mint, vertical — every gradient button reads this */
+  --btn-grad:linear-gradient(180deg,#87986b 0%,#02d560 100%);  /* Figma: primary sage -> emerald, vertical — every gradient button reads this */
   --auth-dark:#1F241F;   /* auth modal left panel */
   --auth-field:#F1F3F0;  /* auth modal input fill */
 }
@@ -47,6 +47,8 @@ html{scroll-behavior:smooth;scroll-padding-top:106px}
 html,body{overflow-x:clip}
 body{font-family:'Glacial Indifference',system-ui,sans-serif;color:#2f2f2f;-webkit-font-smoothing:antialiased}
 .font-display{font-family:'Playfair Display',Georgia,serif}
+/* Figma sets the navbar in Grift (Adobe Fonts, not bundled): used where installed, Glacial otherwise */
+.nav-font{font-family:'Grift','Glacial Indifference',system-ui,sans-serif}
 
 /* gradient pill button */
 .btn-grad{
@@ -325,7 +327,7 @@ details[open] .chev{transform:rotate(180deg)}
   color:#fff;
 }
 .btn--primary:hover{filter:brightness(1.06);transform:translateY(-1px)}
-.btn--ghost{border:1px solid rgba(255,255,255,.75);color:#fff}
+.btn--ghost{border:1px solid #fff;color:#fff}   /* Figma: solid 1px white */
 .btn--ghost:hover{background:rgba(255,255,255,.12)}
 
 /* quick links: 150x62 each, 6px apart, pinned bottom-right */
@@ -356,6 +358,16 @@ details[open] .chev{transform:rotate(180deg)}
 @media (min-width:1024px){
   .hero{height:805px}
   .hero__quick{position:absolute;right:56px;bottom:61px;margin:0}
+  .btn{font-size:20px}   /* Figma: 20/25 on the 199x53 pills */
+  /* Figma: sage 20% glass, 16px sides, 12px icon gap, 15/25 two-line label */
+  .quick{
+    gap:12px;padding:0 16px;
+    background:rgba(135,152,107,.2);border-color:rgba(255,255,255,.3);
+    -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+    font-size:15px;font-weight:400;line-height:25px;
+  }
+  .quick:hover{background:rgba(135,152,107,.34)}
+  .quick i,.quick svg{width:26px;height:26px}
 }
 @media (max-width:1023px){
   .hero__inner{padding:72px 24px}
@@ -1101,17 +1113,17 @@ details[open] .chev{transform:rotate(180deg)}
 
 /* store pills in the navbar */
 .store-pill{
-  display:flex;align-items:center;gap:10px;
-  height:52px;padding:0 18px;
-  border:1px solid #dcdcdc;border-radius:9999px;background:#fff;
+  display:flex;align-items:center;gap:8px;
+  width:142px;height:52px;padding:0 16px;
+  border:.5px solid #000;border-radius:9999px;background:#fff;   /* Figma */
   text-decoration:none;transition:border-color .2s;
 }
-.store-pill:hover{border-color:#b9b9b9}
+.store-pill:hover{background:#f6faf0}
 .store-pill__icon{display:grid;place-items:center;color:#111}
-.store-pill__icon svg{width:20px;height:20px}
-.store-pill__label{line-height:1.2}
-.store-pill__label span{display:block;font-size:11px;color:#8a8a8a}
-.store-pill__label b{display:block;font-size:15px;font-weight:400;color:#111}   /* Glacial has no 600 — 600 would render full bold */
+.store-pill__icon svg{width:24px;height:24px}
+.store-pill__label{line-height:25px;white-space:nowrap}
+.store-pill__label span{display:block;margin-bottom:-10px;font-size:13px;color:rgba(0,0,0,.5)}
+.store-pill__label b{display:block;font-size:15px;font-weight:400;color:#000}   /* Glacial has no 600 — 600 would render full bold */
 
 /* =========================================================
    Free Exam Demo page

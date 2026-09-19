@@ -47,7 +47,7 @@ function Announcement() {
 const StorePill = ({ kind }) => {
   const Icon = Brand[kind];
   return (
-    <a href={kind === 'apple' ? CONTACT.appStore : CONTACT.playStore} target="_blank" rel="noopener" className="store-pill">
+    <a href={kind === 'apple' ? CONTACT.appStore : CONTACT.playStore} target="_blank" rel="noopener" className="store-pill nav-font">
       <span className="store-pill__icon"><Icon /></span>
       <span className="store-pill__label"><span>Get it on</span><b>{kind === 'apple' ? 'Apple Store' : 'Play Store'}</b></span>
     </a>
@@ -69,13 +69,14 @@ function Header() {
   const { pathname } = useLocation();
   useEffect(() => setDrawer(false), [pathname]);   // following a link closes the drawer
 
-  // the underline spans the padded link box, so it runs 10px past the text on each side (Figma); hover previews it
+  // the underline spans the padded link box, so it runs 10px past the text on each side (Figma); hover previews it.
+  // At xl the links sit centred between the logo and the button group: equal gaps either side, like Figma's 111px/111px
   const link = ([to, label]) => (
     <NavLink key={to} to={to} end={to === '/'}
-      className={({ isActive }) => `group relative block px-2.5 py-2.5 transition ${isActive ? 'text-[#7d8f57]' : 'text-[#2b2b2b] hover:text-[#7d8f57]'}`}>
+      className={({ isActive }) => `group relative block px-2.5 pb-3 pt-2.5 leading-[25px] transition ${isActive ? 'text-[#87986b]' : 'text-black hover:text-[#87986b]'}`}>
       {({ isActive }) => <>
         {label}
-        <span className={`absolute left-0 right-0 top-full h-[3px] rounded-full bg-[#4A6B53] transition-transform ${isActive ? '' : 'scale-x-0 group-hover:scale-x-100'}`} />
+        <span className={`absolute left-0 right-0 top-full h-[3px] bg-[#87986b] transition-transform ${isActive ? '' : 'scale-x-0 group-hover:scale-x-100'}`} />
       </>}
     </NavLink>
   );
@@ -86,7 +87,7 @@ function Header() {
         <Link to="/" className="navbar-brand h-11 w-11 shrink-0 min-[769px]:h-[80px] min-[769px]:w-[80px]">
           <img src="/img/logo.png" alt="Dr. SKM's Academy" className="h-full w-full object-contain" />
         </Link>
-        <nav className="ml-10 hidden items-center gap-[11px] text-[18px] lg:flex xl:ml-14 min-[90rem]:ml-[96px]">
+        <nav className="nav-font ml-10 hidden items-center gap-[11px] text-[18px] lg:flex xl:mx-auto">
           {NAV.map(item => item[0] !== '/courses' ? link(item) : (
             <div key="courses" className="has-menu relative">
               {link(item)}
@@ -100,10 +101,10 @@ function Header() {
             </div>
           ))}
         </nav>
-        <div className="ml-auto hidden items-center gap-2.5 xl:flex">
+        <div className="hidden items-center gap-2.5 xl:flex">
           <StorePill kind="apple" />
           <StorePill kind="play" />
-          <LoginButton label="Login/Signup" className="btn-grad h-[52px] w-[172px] rounded-full text-[18px] !font-normal" />
+          <LoginButton label="Login/Signup" className="btn-grad nav-font h-[53px] rounded-full px-7 text-[20px] !font-normal" />
         </div>
         <LoginButton label="Login" className="btn-grad ml-auto h-8 rounded-full px-3.5 text-[13px] leading-none !font-normal min-[769px]:h-auto min-[769px]:px-5 min-[769px]:py-2.5 min-[769px]:text-sm xl:hidden" />
         <button type="button" onClick={() => setDrawer(true)} className="-mr-2 p-2 text-[#1a1a1a] lg:hidden" aria-label="Open menu" aria-expanded={drawer}>
