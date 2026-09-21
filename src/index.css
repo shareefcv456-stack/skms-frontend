@@ -579,8 +579,11 @@ details[open] .chev{transform:rotate(180deg)}
 .founder__card{
   /* same colour as the page: only the right edge — the part that laps over
      the portrait — is visible, so the shadow is cast to the right only */
-  width:64%;
-  background:#eff1ea;border-radius:28px;
+  width:66.4%;
+  min-height:360px;
+  background:#eff1ea;
+  border-top:1px solid #d7d8d0;border-bottom:1px solid #d7d8d0;
+  border-radius:0 44px 44px 0;
   box-shadow:22px 0 40px -24px rgba(45,55,35,.30);
   padding:48px 56px 48px 0;
   margin-top:34px;
