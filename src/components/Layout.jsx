@@ -2,7 +2,7 @@
    Write-a-Review modal. Pages open that modal through the outlet context: useOutletContext().openReview() */
 import { useEffect, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router';
-import { Menu, X } from 'lucide-react';
+import { LogOut, Menu, X } from 'lucide-react';
 import { CONTACT, COURSE_MENU, NAV, isExternal, safeUrl } from '../lib/content.js';
 import { useCms } from '../lib/site.jsx';
 import { useAuth } from '../lib/auth.jsx';
@@ -54,13 +54,33 @@ const StorePill = ({ kind }) => {
   );
 };
 
+function initials(user) {
+  return String(user?.name || user?.email || '?').trim().charAt(0).toUpperCase() || '?';
+}
+
+function UserAvatar({ user, className = 'h-8 w-8' }) {
+  const [imageFailed, setImageFailed] = useState(false);
+  const image = user?.picture || user?.avatar;
+
+  useEffect(() => setImageFailed(false), [image]);
+
+  if (image && !imageFailed) return <img src={image} alt="" onError={() => setImageFailed(true)} className={`${className} rounded-full object-cover`} />;
+  return <span className={`grid ${className} place-items-center rounded-full bg-[#e8f0df] text-[13px] font-bold text-[#2d4a3e]`}>{initials(user)}</span>;
+}
+
 function LoginButton({ label, className }) {
   const { user, requireLogin, logout } = useAuth();
+
+  if (!user) return <button type="button" className={className} onClick={requireLogin}>{label}</button>;
   return (
-    <button type="button" className={className} title={user ? `Signed in as ${user.email}` : ''}
-      onClick={() => (user ? logout() : requireLogin())}>
-      {user ? 'Logout' : label}
-    </button>
+    <div className="flex shrink-0 items-center gap-2">
+      <Link to="/dashboard" aria-label="Open my dashboard" title="My dashboard" className="grid h-10 w-10 place-items-center rounded-full border border-[#87986b]/35 bg-white transition hover:border-[#87986b] hover:shadow-[0_4px_14px_rgba(45,74,62,.18)]">
+        <UserAvatar user={user} className="h-8 w-8" />
+      </Link>
+      <button type="button" aria-label="Sign out" title="Sign out" onClick={logout} className="grid h-10 w-10 place-items-center rounded-full text-[#2d4a3e] transition hover:scale-105 hover:bg-[#e8f0df] hover:text-[#1e2b24]">
+        <LogOut className="h-[18px] w-[18px]" strokeWidth={2.5} />
+      </button>
+    </div>
   );
 }
 
@@ -101,12 +121,13 @@ function Header() {
             </div>
           ))}
         </nav>
-        <div className="hidden items-center gap-2.5 xl:flex">
-          <StorePill kind="apple" />
-          <StorePill kind="play" />
-          <LoginButton label="Login/Signup" className="btn-grad nav-font h-[53px] rounded-full px-7 text-[20px] !font-normal" />
+        <div className="ml-auto flex items-center gap-2.5">
+          <div className="hidden items-center gap-2.5 xl:flex">
+            <StorePill kind="apple" />
+            <StorePill kind="play" />
+          </div>
+          <LoginButton label="Login/Signup" className="btn-grad nav-font h-8 rounded-full px-3.5 text-[13px] leading-none !font-normal min-[769px]:h-auto min-[769px]:px-5 min-[769px]:py-2.5 min-[769px]:text-sm xl:h-[53px] xl:px-7 xl:text-[20px]" />
         </div>
-        <LoginButton label="Login" className="btn-grad ml-auto h-8 rounded-full px-3.5 text-[13px] leading-none !font-normal min-[769px]:h-auto min-[769px]:px-5 min-[769px]:py-2.5 min-[769px]:text-sm xl:hidden" />
         <button type="button" onClick={() => setDrawer(true)} className="-mr-2 p-2 text-[#1a1a1a] lg:hidden" aria-label="Open menu" aria-expanded={drawer}>
           <Menu className="h-6 w-6" />
         </button>

@@ -23,6 +23,7 @@ const loadGis = () => new Promise((ok, fail) => {
 
 export function AuthProvider({ children }) {
   const [user, setUserState] = useState(storedUser);
+  const [account, setAccount] = useState({ activePlans: [] });
   const [modal, setModal] = useState(null);   // null = closed, else { forPurchase }
   const [msg, setMsg] = useState(null);       // { text, bad }
   const [googleBusy, setGoogleBusy] = useState(false);
@@ -31,6 +32,25 @@ export function AuthProvider({ children }) {
 
   const setUser = u => { ls.set(USER_KEY, u); setUserState(u); };
   const say = (text, bad) => setMsg(text ? { text, bad } : null);
+  const loadAccount = token => api('/api/account', { headers: { Authorization: `Bearer ${token}` } }).then(r => r?.ok ? r.data : null);
+  const updateAccount = profile => api('/api/account', {
+    method: 'PUT', headers: { Authorization: `Bearer ${user?.token}` }, body: JSON.stringify(profile),
+  }).then(r => {
+    if (!r?.ok) throw new Error(r?.data?.error || 'Could not update your profile');
+    const next = { ...user, ...r.data.user };
+    setUser(next);
+    return loadAccount(next.token).then(data => { if (data) setAccount(data); return data; });
+  });
+
+  useEffect(() => {
+    let cancelled = false;
+    setAccount({ activePlans: [] });
+    if (!user?.token) return undefined;
+    loadAccount(user.token).then(data => {
+      if (!cancelled && data) setAccount(data);
+    });
+    return () => { cancelled = true; };
+  }, [user?.token]);
 
   const close = () => { pending.current = null; setModal(null); };
   function requireLogin(onDone, forPurchase = false) {
@@ -39,7 +59,7 @@ export function AuthProvider({ children }) {
     setModal({ forPurchase });
   }
   function finishLogin(data) {
-    const u = { token: data.token, exp: data.exp, ...data.user };
+    const u = { token: data.token, exp: data.exp, role: data.user?.role || 'user', ...data.user };
     setUser(u);
     setModal(null);
     const done = pending.current;
@@ -82,7 +102,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <Auth.Provider value={{ user, requireLogin, logout: () => setUser(null) }}>
+    <Auth.Provider value={{ user, account, refreshAccount: () => user?.token ? loadAccount(user.token).then(data => data && setAccount(data)) : Promise.resolve(), updateAccount, requireLogin, logout: () => setUser(null) }}>
       {children}
       {modal && <LoginModal forPurchase={modal.forPurchase} msg={msg} say={say} onClose={close}
         onGoogle={googleSignIn} googleBusy={googleBusy} onLogin={finishLogin} />}

@@ -2,7 +2,7 @@
    No buyer form: the buyer is the signed-in account, and Razorpay's own overlay collects a phone number when the
    profile has none. A logged-out Buy Now opens the login modal and continues to payment once signed in. */
 import { useEffect, useRef, useState } from 'react';
-import { useLocation } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 import { money, planLabel } from '../lib/content.js';
 import { usePlans } from '../lib/site.jsx';
 import { useAuth } from '../lib/auth.jsx';
@@ -19,11 +19,12 @@ const loadRazorpay = () => window.Razorpay ? Promise.resolve() : new Promise((ok
 export default function Plans() {
   const plans = usePlans();
   const { hash } = useLocation();
+  const navigate = useNavigate();
   const [picked, setPicked] = useState(null);
   useEffect(() => setPicked(null), [hash]);   // /plans#ai from another page opens that tab
   const active = plans.find(g => g.id === (picked ?? decodeURIComponent(hash.slice(1)))) || plans[0];
 
-  const { user, requireLogin, logout } = useAuth();
+  const { user, requireLogin, logout, refreshAccount } = useAuth();
   const [co, setCo] = useState(null);             // checkout dialog: { step, bar } | { error }
   const [receipt, setReceipt] = useState(null);
   const order = useRef(null), busy = useRef(false);
@@ -77,8 +78,9 @@ export default function Plans() {
         if (!v?.ok) throw new Error(`${v?.data?.error || 'We could not verify your payment.'} If money was deducted, contact us with payment ID ${paid.razorpay_payment_id}.`);
         enrollment = v.data.enrollment;
       }
+      await refreshAccount();
       setCo(null);
-      setReceipt(enrollment);
+      navigate('/dashboard', { state: { success: true, plan: enrollment.plan } });
     } catch (x) {
       setCo({ error: x.message });
     } finally {

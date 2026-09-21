@@ -12,6 +12,7 @@ import About from './pages/About.jsx';
 import Contact from './pages/Contact.jsx';
 import Demo from './pages/Demo.jsx';
 import Faq from './pages/Faq.jsx';
+import Dashboard from './pages/Dashboard.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -23,6 +24,7 @@ createRoot(document.getElementById('root')).render(
               <Route index element={<Home />} />
               <Route path="courses" element={<Courses />} />
               <Route path="plans" element={<Plans />} />
+              <Route path="dashboard" element={<Dashboard />} />
               <Route path="about" element={<About />} />
               <Route path="contact" element={<Contact />} />
               <Route path="demo" element={<Demo />} />
