@@ -48,11 +48,15 @@ export function Stars({ rating, figma }) {
   );
 }
 
+function cleanReview(body) {
+  return String(body ?? '').trim().replace(/^(["“”])+|(["“”])+$/g, '').trim();
+}
+
 export function Testimonial({ t }) {
   return (
     <article className="tcard">
       <Stars rating={t.rating} figma />
-      <p className="tcard__quote">&ldquo;{t.body}&rdquo;</p>
+      <p className="tcard__quote">{cleanReview(t.body)}</p>
       <footer className="tcard__by">
         <span className="tcard__avatar">{String(t.name ?? '').replace(/^Dr\.?\s*/i, '')[0] || '?'}</span>
         <span><b>{t.name}</b><span>{t.role}</span></span>
@@ -65,7 +69,7 @@ export function StudentReview({ r }) {
   return (
     <article className="tcard tcard--student">
       <Stars rating={r.rating} />
-      <p className="tcard__quote">{r.body}</p>
+      <p className="tcard__quote">{cleanReview(r.body)}</p>
       <footer className="tcard__by">
         <span className="tcard__avatar">{initials(r.name)}</span>
         <span><b>{r.name}</b><span>{r.role}</span><span className="tcard__verified">✓ Verified Student</span></span>

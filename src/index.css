@@ -900,28 +900,43 @@ details[open] .chev{transform:rotate(180deg)}
 .testimonials{background:#f9f9f4;padding:92px 0}
 .testimonials:not(.testimonials--students){border-bottom:1px solid rgba(30,58,43,.1)}
 .testimonials .rail{margin-top:44px}
-/* testimonial card — Figma component 146:4646. The quote is Grift Italic in the design (a paid font);
-   Urbanist Italic stands in: same single-storey italic and the same line breaks at 18px */
+/* Shared review card surface for both review sections. */
 .tcard{
-  flex:none;width:351px;display:flex;flex-direction:column;
-  background:#fff;border:1px solid rgba(229,231,235,.6);border-radius:16px;padding:24px;
-  box-shadow:0 1px 3px rgba(0,0,0,.06);
+  flex:none;width:351px;display:flex;flex-direction:column;justify-content:space-between;gap:16px;
+  min-height:380px;height:100%;box-sizing:border-box;
+  background:#fff;border:1px solid rgba(229,231,235,.6);border-radius:24px;padding:24px;
+  box-shadow:0 8px 24px rgba(30,48,38,.07);
 }
 .tcard__stars{display:flex;gap:4px;color:#87986b}
 .tcard__stars svg{width:16px;height:16px;fill:currentColor}
 .tcard__stars .is-off{opacity:.25}
-.tcard__quote{margin:16px 0 0;flex:1;font:italic 400 14px/1.7 'Urbanist',system-ui,sans-serif;color:rgba(0,0,0,.7)}
+.tcard__quote{
+  margin:0;flex:1 1 auto;display:block;
+  font-family:'Adamina',Georgia,serif;
+  font-style:italic;font-weight:400;
+  font-size:15px;line-height:1.7;letter-spacing:.02em;
+  color:#343b38;text-wrap:pretty;
+}
+.tcard__quote::before,.tcard__quote::after{
+  font-family:'Adamina',Georgia,serif;
+  font-style:italic;font-weight:400;
+  font-size:1.6em;line-height:0;letter-spacing:0;
+  vertical-align:-.12em;color:rgba(45,74,62,.42);
+}
+.tcard__quote::before{content:'“';margin-right:.08em}
+.tcard__quote::after{content:'”';margin-left:.08em}
 .tcard__by{
-  margin-top:18px;padding-top:14px;border-top:1px solid #e2dfd5;
+  margin:0;padding-top:14px;border-top:1px solid #e2dfd5;
   display:flex;align-items:center;gap:12px;
 }
+.tcard__by > span:last-child{min-width:0}
 .tcard__avatar{
   display:grid;place-items:center;width:36px;height:36px;flex:none;
   border-radius:50%;background:#eef1e6;color:#87986b;
   font:400 18px/28px 'DM Serif Display',Georgia,serif;
 }
-.tcard__by b{display:block;font:600 14px/20px 'Outfit',system-ui,sans-serif;color:#1c1c1c}
-.tcard__by span span{display:block;font:400 12px/16px 'Outfit',system-ui,sans-serif;color:#706f64}
+.tcard__by b{display:block;font:700 14px/20px 'Glacial Indifference',system-ui,sans-serif;color:#1c1c1c}
+.tcard__by span span{display:block;font:400 12px/16px 'Glacial Indifference',system-ui,sans-serif;color:#706f64}
 
 /* "What Our Students Say" — the testimonial card and rail (shared .testimonials/.tcard rules, mobile and desktop).
    The background eases from the "Doctors Who Passed" tint into the faculty section's, so there is no block edge;
@@ -930,16 +945,14 @@ details[open] .chev{transform:rotate(180deg)}
   --forest:#2D4A3E;
 }
 .tcard--student{
-  background:#fff;border:1px solid rgba(229,231,235,.6);border-radius:16px;padding:24px;
-  box-shadow:0 1px 3px rgba(0,0,0,.06);
+  --review-accent:#2D4A3E;
 }
 .tcard--student .tcard__stars{color:#f2b01e}
 .tcard--student .tcard__quote::before,.tcard--student .tcard__quote::after{
-  font-family:'Playfair Display',Georgia,serif;font-style:normal;font-weight:700;font-size:2.4em;line-height:0;vertical-align:-.42em;color:rgba(45,74,62,.45);
+  font-family:'Adamina',Georgia,serif;font-style:italic;font-weight:400;
+  font-size:2.2em;line-height:0;vertical-align:-.34em;color:rgba(45,74,62,.45);
 }
-.tcard--student .tcard__quote::before{content:'\201C';margin-right:4px}
-.tcard--student .tcard__quote::after{content:'\201D';margin-left:3px}
-.tcard--student .tcard__avatar{background:rgba(45,74,62,.1);color:var(--forest)}
+.tcard--student .tcard__avatar{background:rgba(45,74,62,.1);color:var(--review-accent)}
 .tcard--student .tcard__by{border-top-color:rgba(45,74,62,.08)}
 /* sits under the name + role; beats the grey block style of .tcard__by span span */
 .tcard__by .tcard__verified{
@@ -979,7 +992,7 @@ details[open] .chev{transform:rotate(180deg)}
 @media (max-width:820px){
   .testimonials,.faculty{padding:64px 0}
   .rail{gap:16px;padding:0 24px 16px}
-  .tcard{width:300px;padding:28px 24px}
+  .tcard{width:300px;padding:24px}
   .about-hero__bg{height:240px}
   .about-hero__card{margin-top:-56px;padding:32px 24px;border-radius:26px}
   .about-hero__title{font-size:27px}
@@ -988,18 +1001,18 @@ details[open] .chev{transform:rotate(180deg)}
 @media (max-width:768px){
   .testimonials .section-head{padding:0 16px;text-align:center}
   .testimonials .rail{
-    display:flex;gap:16px;overflow-x:auto;
+    display:flex;align-items:stretch;gap:16px;overflow-x:auto;
     scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;
     padding:0 16px 20px;
   }
-  /* compact, uniform cards: long reviews clamp at 6 lines, author row pinned to the bottom */
-  .tcard{flex:0 0 85%;width:auto;max-width:320px;max-height:280px;margin:0 auto;scroll-snap-align:center;padding:18px;overflow-wrap:anywhere}
+  /* The tallest review sets the rail height; every card stretches to match it. */
+  .tcard{flex:0 0 85%;width:auto;max-width:320px;height:auto;min-height:420px;max-height:none;margin:0 auto;scroll-snap-align:center;padding:24px;overflow-wrap:anywhere}
   .tcard__stars svg{width:14px;height:14px}
   .tcard__quote{
-    flex:0 1 auto;min-height:0;margin:12px 0;font-size:13px;line-height:1.7;
-    display:-webkit-box;-webkit-line-clamp:6;-webkit-box-orient:vertical;overflow:hidden;
+    flex:1 1 auto;min-height:0;margin:0;font-size:14px;line-height:1.7;
+    overflow-wrap:anywhere;
   }
-  .tcard__by{margin-top:auto;padding-top:12px;gap:10px}
+  .tcard__by{margin:0;padding-top:12px;gap:10px}
   .tcard__avatar{width:32px;height:32px;font-size:12px}
   .tcard__by b{font-size:13px}
   .tcard__by span span{font-size:12px}
@@ -1014,39 +1027,31 @@ details[open] .chev{transform:rotate(180deg)}
   }
   /* no max-width / auto margins: the track must start at the section's own left gutter */
   .testimonials .rail{
-    display:flex;gap:24px;overflow-x:auto;scroll-snap-type:x mandatory;
+    display:flex;align-items:stretch;gap:24px;overflow-x:auto;scroll-snap-type:x mandatory;
     max-width:1320px;margin:44px auto 0;padding:4px 4px 28px;
     -webkit-overflow-scrolling:touch;
   }
   .testimonials .tcard{
-    flex:0 0 300px;width:300px;max-width:300px;min-width:0;box-sizing:border-box;
+    flex:0 0 260px;width:260px;max-width:260px;min-width:0;box-sizing:border-box;
     display:flex;flex-direction:column;justify-content:space-between;
-    min-height:380px;height:auto;max-height:none;overflow:visible;
-    background:#fff;border:1px solid rgba(229,231,235,.6);border-radius:16px;padding:24px;
-    box-shadow:0 1px 3px rgba(0,0,0,.06);
+    min-height:526px;height:auto;max-height:none;overflow:visible;
+    background:#fff;border:1px solid rgba(229,231,235,.6);border-radius:24px;padding:24px;
+    box-shadow:0 8px 24px rgba(30,48,38,.07);
   }
   .testimonials .tcard__stars{gap:4px}
   .testimonials .tcard__stars svg{width:16px;height:16px}
   .testimonials .tcard__quote{
     flex:1 1 auto;min-height:0;
-    margin:16px 0 0;
-    font:italic 400 13px/1.55 'Urbanist',system-ui,sans-serif;color:rgba(0,0,0,.7);
+    margin:0;
+    font-family:'Adamina',Georgia,serif;
+    font-style:italic;font-weight:400;
+    font-size:15px;line-height:1.7;letter-spacing:.02em;
+    color:#343b38;overflow-wrap:anywhere;
   }
   /* divider 24px under the quote, 20px above the author row, which stays flush to the bottom */
   .testimonials .tcard__by{
-    margin:18px 0 0;padding-top:14px;
+    margin:0;padding-top:14px;
     border-top:1px solid #e2dfd5;
-  }
-}
-
-/* desktop: symmetric padding and a centred row of identical 300px cards */
-@media (min-width:1024px){
-  .testimonials.testimonials--students{padding:92px 48px}
-  .testimonials--students .rail{gap:24px}
-  .testimonials--students .tcard{
-    flex:0 0 300px;width:300px;max-width:300px;height:380px;min-height:0;max-height:380px;
-    background:#fff;border:1px solid rgba(229,231,235,.6);border-radius:16px;padding:24px;
-    box-shadow:0 1px 3px rgba(0,0,0,.06);
   }
 }
 
