@@ -52,7 +52,22 @@ export function AuthProvider({ children }) {
     return () => { cancelled = true; };
   }, [user?.token]);
 
-  const close = () => { pending.current = null; setModal(null); };
+  /* FedCM aborts the browser's credentials request whenever the Google prompt is dismissed — by the user, or by
+     our own cancel() below. GIS doesn't catch its own rejection, so it lands in the console as an unhandled
+     AbortError. Our fetches never reject (api() catches its own aborts), so swallowing just this one pair of
+     DOMException names keeps a cancelled sign-in quiet without hiding a real failure. */
+  useEffect(() => {
+    const onReject = e => {
+      if (e.reason?.name !== 'AbortError' && e.reason?.name !== 'NotAllowedError') return;
+      e.preventDefault();
+      setGoogleBusy(false);
+    };
+    addEventListener('unhandledrejection', onReject);
+    return () => removeEventListener('unhandledrejection', onReject);
+  }, []);
+
+  // closing the modal takes any open One Tap prompt down with it, rather than leaving it floating over the page
+  const close = () => { pending.current = null; setModal(null); window.google?.accounts?.id?.cancel?.(); };
   function requireLogin(onDone, forPurchase = false) {
     pending.current = onDone;
     say('');
@@ -97,8 +112,17 @@ export function AuthProvider({ children }) {
 
   function googleSignIn() {   // stays synchronous so the popup keeps the click
     if (!gisReady.current) return say('Google sign-in is not available right now — use your email instead.', true);
+    say('');
     const picker = document.querySelector(`#${GIS_HOST} [role="button"]`);
-    picker ? picker.click() : window.google.accounts.id.prompt();
+    if (picker) return picker.click();
+    // no rendered button (blocked or hidden) — fall back to One Tap. A dismissed or skipped prompt is a cancel,
+    // not a failure: say so instead of leaving the modal looking stuck. FedCM trims this notification down, so
+    // every moment method is treated as optional.
+    window.google.accounts.id.prompt(n => {
+      try {
+        if (n?.isDismissedMoment?.() || n?.isSkippedMoment?.()) say('Google sign-in was cancelled — use your email instead.', true);
+      } catch { /* FedCM drops these methods; nothing to report */ }
+    });
   }
 
   return (
@@ -125,15 +149,20 @@ function LoginModal({ forPurchase, msg, say, onClose, onGoogle, googleBusy, onLo
 
   async function submit(e) {
     e.preventDefault();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) return say('Please enter a valid email address.', true);
+    // Autofill and password managers can fill the field without firing onChange, leaving `email` empty while the
+    // input clearly shows an address — that is what produced "Please enter a valid email address" on a filled form.
+    // Read the form itself, and normalise the way the backend does, so the checked value is the value we send.
+    const address = String(new FormData(e.currentTarget).get('email') || '').trim().toLowerCase();
+    if (email.trim().toLowerCase() !== address) setEmail(address);
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(address)) return say('Please enter a valid email address.', true);
     if (challenge && !/^\d{6}$/.test(otp.trim())) return say('Enter the 6-digit code from your email.', true);
     setBusy(true);
     try {
       if (!challenge) {
-        const r = await api('/api/auth/otp', { method: 'POST', body: JSON.stringify({ email }) });
+        const r = await api('/api/auth/otp', { method: 'POST', body: JSON.stringify({ email: address }) });
         if (!r?.ok) return say(r?.data?.error || 'Could not send the code — please try again.', true);
         setChallenge(r.data.challenge);
-        return say(`We sent a 6-digit code to ${email.trim()}.` + (r.data.devCode ? ` Test code: ${r.data.devCode}` : ''));
+        return say(`We sent a 6-digit code to ${address}.` + (r.data.devCode ? ` Test code: ${r.data.devCode}` : ''));
       }
       const r = await api('/api/auth/verify', { method: 'POST', body: JSON.stringify({ challenge, otp: otp.trim() }) });
       if (!r?.ok) return say(r?.data?.error || 'Login failed — please try again.', true);
@@ -158,8 +187,8 @@ function LoginModal({ forPurchase, msg, say, onClose, onGoogle, googleBusy, onLo
           <form className="auth-form" noValidate onSubmit={submit}>
             <p className="auth-or">or</p>
             <label className="auth-label" htmlFor="auth-email">Enter your Email address</label>
-            <input id="auth-email" type="email" autoComplete="email" maxLength={200} required className="auth-input" placeholder="eg, ajmal55@gmail.com"
-              value={email} onChange={e => { setEmail(e.target.value); setChallenge(null); setOtp(''); }} />
+            <input id="auth-email" name="email" type="email" autoComplete="email" maxLength={200} required className="auth-input" placeholder="eg, ajmal55@gmail.com"
+              value={email} onChange={e => { setEmail(e.target.value); setChallenge(null); setOtp(''); say(''); }} />
             {challenge && <>
               <label className="auth-label" htmlFor="auth-otp">Enter the 6-digit code we emailed you</label>
               <input id="auth-otp" inputMode="numeric" autoComplete="one-time-code" maxLength={6} className="auth-input" placeholder="••••••" autoFocus
