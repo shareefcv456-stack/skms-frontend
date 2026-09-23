@@ -399,13 +399,13 @@ details[open] .chev{transform:rotate(180deg)}
     padding:5rem 1.25rem 3rem;text-align:left;
   }
   .hero__content{width:100%;margin:0}
-  .hero__title{font-size:30px;line-height:1.22;font-weight:700;margin:0;text-align:left;text-shadow:0 2px 8px rgba(0,0,0,.45)}
-  .hero__lede{max-width:100%;margin:.65rem 0 1.25rem;font-size:15.5px;line-height:1.45;color:#f1f5f9;text-align:left}
+  .hero__title{font-size:clamp(26px,7.8vw,34px);line-height:1.2;font-weight:700;margin:0;text-align:left;text-shadow:0 2px 8px rgba(0,0,0,.45)}   /* 320px keeps "for Gulf Licensing" on one line */
+  .hero__lede{max-width:34rem;margin:14px 0 24px;font-size:clamp(14.5px,4vw,16px);line-height:1.55;color:#f1f5f9;text-align:left}
   /* the two main buttons: a left-aligned stack, 10px apart */
   .hero__actions{display:flex;flex-direction:column;align-self:flex-start;width:100%;max-width:290px;gap:10px;margin:0}
-  .hero__actions .btn{width:100%;padding:0 20px}
-  /* quick links: one row of three, 2rem under the buttons */
-  .hero__quick{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;width:100%;margin-top:2rem;padding-top:0}
+  .hero__actions .btn{width:100%;height:50px;padding:0 20px}
+  /* quick links: one row of three, 28px under the buttons */
+  .hero__quick{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;width:100%;max-width:560px;margin-top:28px;padding-top:0}
   .quick{width:100%;height:auto;min-height:56px;padding:8px;gap:8px;font-size:12px}
   .quick i,.quick svg{width:18px;height:18px}
 }
@@ -783,9 +783,29 @@ details[open] .chev{transform:rotate(180deg)}
 @media (max-width:1000px){
   .plan-grid{grid-template-columns:repeat(2,290px);width:min(100%,619px)}
 }
+/* mobile: one card at a time, swiped or stepped with the arrows under it (Plans.jsx) */
+.plan-nav{display:none}
 @media (max-width:620px){
-  .plan-grid{grid-template-columns:minmax(0,340px);width:100%;padding:0 16px}
-  .plan-grid .plan-card{max-width:340px}
+  .plan-grid{
+    /* 16px of room on every side for the flag and the card shadow; the sides reach into the page gutter, so a card
+       keeps the full column width (max 340px) */
+    display:flex;justify-content:flex-start;gap:16px;width:auto;max-width:372px;padding:18px 16px 28px;
+    margin:0 max(-16px,calc((100% - 372px) / 2));
+    overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-inline:16px;overscroll-behavior-x:contain;scrollbar-width:none;
+  }
+  .plan-grid::-webkit-scrollbar{display:none}
+  .plan-grid .plan-card{flex:0 0 100%;max-width:none;scroll-snap-align:start;scroll-snap-stop:always}
+  .plan-grid .plan-card--dark{box-shadow:0 10px 22px rgba(20,30,10,.22)}   /* a shadow that fits the room */
+  .plan-nav{display:flex;align-items:center;justify-content:center;gap:18px;margin-top:4px}
+  .plan-nav__arrow{
+    display:grid;place-items:center;width:44px;height:44px;border:1px solid #a4ae8f;border-radius:9999px;
+    background:#fff;color:#4b5b33;cursor:pointer;transition:opacity .2s,background-color .2s;
+  }
+  .plan-nav__arrow svg{width:20px;height:20px}
+  .plan-nav__arrow:disabled{opacity:.35;cursor:default}
+  .plan-nav__dots{display:flex;gap:8px}
+  .plan-nav__dot{width:8px;height:8px;padding:0;border:none;border-radius:9999px;background:#cfd6c2;cursor:pointer;transition:width .2s,background-color .2s}
+  .plan-nav__dot.is-on{width:22px;background:#7d8f57}
 }
 
 /* =========================================================
@@ -877,8 +897,13 @@ details[open] .chev{transform:rotate(180deg)}
   object-fit:cover;border-radius:26px;
 }
 
+.course-tabs{display:none}
+@media (max-width:1023px){
+  .course-tabs{display:flex;gap:4px;max-width:1328px;margin:0 auto 32px;padding:0 24px;font-size:15px;scroll-snap-type:none}
+  .course-tabs .plan-tab{padding:10px 11px 12px;text-decoration:none}
+}
 @media (max-width:980px){
-  .course-page{padding:56px 0}
+  .course-page{padding:32px 0 56px}
   .course-page__inner{grid-template-columns:1fr;gap:28px}
   .course-page__media{order:-1}
   .course-page__media img{aspect-ratio:16/10;max-height:320px}

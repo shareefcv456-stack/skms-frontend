@@ -3,6 +3,7 @@
    profile has none. A logged-out Buy Now opens the login modal and continues to payment once signed in. */
 import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { money, planLabel } from '../lib/content.js';
 import { usePlans } from '../lib/site.jsx';
 import { useAuth } from '../lib/auth.jsx';
@@ -23,6 +24,13 @@ export default function Plans() {
   const [picked, setPicked] = useState(null);
   useEffect(() => setPicked(null), [hash]);   // /plans#ai from another page opens that tab
   const active = plans.find(g => g.id === (picked ?? decodeURIComponent(hash.slice(1)))) || plans[0];
+
+  /* ≤620px the grid is a one-card swipe carousel (CSS scroll-snap); the arrows and dots drive the same scroll */
+  const grid = useRef(null);
+  const [slide, setSlide] = useState(0);
+  useEffect(() => { grid.current?.scrollTo({ left: 0 }); setSlide(0); }, [active?.id]);
+  const step = () => { const [a, b] = grid.current.children; return b ? b.offsetLeft - a.offsetLeft : 1; };   // one card + gap
+  const goTo = i => grid.current.scrollTo({ left: i * step(), behavior: 'smooth' });
 
   const { user, requireLogin, logout, refreshAccount } = useAuth();
   const [co, setCo] = useState(null);             // checkout dialog: { step, bar } | { error }
@@ -78,7 +86,7 @@ export default function Plans() {
         if (!v?.ok) throw new Error(`${v?.data?.error || 'We could not verify your payment.'} If money was deducted, contact us with payment ID ${paid.razorpay_payment_id}.`);
         enrollment = v.data.enrollment;
       }
-      await refreshAccount();
+      await refreshAccount(u.token);   // u, not this render's user: a buyer who signed in mid-checkout is only in u
       setCo(null);
       navigate('/dashboard', { state: { success: true, plan: enrollment.plan } });
     } catch (x) {
@@ -110,9 +118,19 @@ export default function Plans() {
         </div>
         {active && (
           <div className="mt-9" id="panels">
-            <div id={active.id} className="plan-grid" style={{ '--cols': Math.min(active.cards.length, 4) }}>
+            <div id={active.id} ref={grid} className="plan-grid" style={{ '--cols': Math.min(active.cards.length, 4) }}
+              onScroll={e => setSlide(Math.round(e.currentTarget.scrollLeft / step()))}>
               {active.cards.map((c, i) => <PlanCard key={c.planId ?? i} c={c} onBuy={() => buy(active, i)} />)}
             </div>
+            {active.cards.length > 1 && (
+              <div className="plan-nav" aria-label="Plan cards">
+                <button type="button" className="plan-nav__arrow" onClick={() => goTo(slide - 1)} disabled={slide === 0} aria-label="Previous plan"><ChevronLeft /></button>
+                <div className="plan-nav__dots">
+                  {active.cards.map((c, i) => <button key={i} type="button" className={`plan-nav__dot${i === slide ? ' is-on' : ''}`} onClick={() => goTo(i)} aria-label={`Show ${c.name || c.duration}`} aria-current={i === slide} />)}
+                </div>
+                <button type="button" className="plan-nav__arrow" onClick={() => goTo(slide + 1)} disabled={slide >= active.cards.length - 1} aria-label="Next plan"><ChevronRight /></button>
+              </div>
+            )}
           </div>
         )}
 

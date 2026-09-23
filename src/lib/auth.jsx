@@ -37,19 +37,21 @@ export function AuthProvider({ children }) {
     method: 'PUT', headers: { Authorization: `Bearer ${user?.token}` }, body: JSON.stringify(profile),
   }).then(r => {
     if (!r?.ok) throw new Error(r?.data?.error || 'Could not update your profile');
-    const next = { ...user, ...r.data.user };
-    setUser(next);
-    return loadAccount(next.token).then(data => { if (data) setAccount(data); return data; });
+    setUser({ ...user, ...r.data.user });
+    return refreshAccount(user.token);
   });
 
+  /* only the newest account request may land: a slow load started at sign-in can't overwrite the fresh one a
+     payment asked for, and a sign-out drops anything still in flight */
+  const accountSeq = useRef(0);
+  const refreshAccount = (token = user?.token) => {
+    const n = ++accountSeq.current;
+    if (!token) return Promise.resolve();
+    return loadAccount(token).then(data => { if (data && n === accountSeq.current) setAccount(data); });
+  };
   useEffect(() => {
-    let cancelled = false;
     setAccount({ activePlans: [] });
-    if (!user?.token) return undefined;
-    loadAccount(user.token).then(data => {
-      if (!cancelled && data) setAccount(data);
-    });
-    return () => { cancelled = true; };
+    refreshAccount(user?.token);
   }, [user?.token]);
 
   /* FedCM aborts the browser's credentials request whenever the Google prompt is dismissed — by the user, or by
@@ -126,7 +128,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <Auth.Provider value={{ user, account, refreshAccount: () => user?.token ? loadAccount(user.token).then(data => data && setAccount(data)) : Promise.resolve(), updateAccount, requireLogin, logout: () => setUser(null) }}>
+    <Auth.Provider value={{ user, account, refreshAccount, updateAccount, requireLogin, logout: () => setUser(null) }}>
       {children}
       {modal && <LoginModal forPurchase={modal.forPurchase} msg={msg} say={say} onClose={close}
         onGoogle={googleSignIn} googleBusy={googleBusy} onLogin={finishLogin} />}

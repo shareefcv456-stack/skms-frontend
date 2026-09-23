@@ -1,5 +1,7 @@
 /* One course at a time, picked in the navbar's Courses menu (/courses#gp, #ai, #specialist, #final; #gp by default) */
+import { useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router';
+import { COURSE_MENU } from '../lib/content.js';
 import { COURSE_COPY, SPECIALIST_COPY } from '../lib/copy.jsx';
 import { Cta } from '../components/Sections.jsx';
 
@@ -13,8 +15,17 @@ const COURSES = {
 export default function Courses() {
   const id = decodeURIComponent(useLocation().hash.slice(1));
   const key = COURSES[id] ? id : 'gp', c = COURSES[key];
+  const tabs = useRef(null);
+  useEffect(() => { tabs.current?.querySelector('.is-on')?.scrollIntoView({ block: 'nearest', inline: 'center' }); }, [key]);
   return <>
     <section className="course-page">
+      {/* below 1024px the navbar's Courses menu is gone: these tabs switch course instead */}
+      <nav className="course-tabs rail" ref={tabs} aria-label="Courses">
+        {COURSE_MENU.map(([label, to]) => {
+          const on = to.endsWith(`#${key}`);
+          return <Link key={to} to={to} className={`plan-tab${on ? ' is-on' : ''}`} aria-current={on ? 'page' : undefined}>{label}</Link>;
+        })}
+      </nav>
       <div className="course-page__inner">
         <div className="course-page__body">
           <h1 className="course-page__title">{c.title}</h1>

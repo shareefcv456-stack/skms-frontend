@@ -2,7 +2,7 @@
    Write-a-Review modal. Pages open that modal through the outlet context: useOutletContext().openReview() */
 import { useEffect, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router';
-import { LogOut, Menu, X } from 'lucide-react';
+import { ChevronDown, LogOut, Menu, X } from 'lucide-react';
 import { CONTACT, COURSE_MENU, NAV, isExternal, safeUrl } from '../lib/content.js';
 import { useCms } from '../lib/site.jsx';
 import { useAuth } from '../lib/auth.jsx';
@@ -86,8 +86,10 @@ function LoginButton({ label, className }) {
 
 function Header() {
   const [drawer, setDrawer] = useState(false);
-  const { pathname } = useLocation();
-  useEffect(() => setDrawer(false), [pathname]);   // following a link closes the drawer
+  const { pathname, hash } = useLocation();
+  const [coursesOpen, setCoursesOpen] = useState(false);
+  useEffect(() => setDrawer(false), [pathname, hash]);   // following a link closes the drawer (a course is only a new #hash)
+  useEffect(() => { if (drawer) setCoursesOpen(pathname === '/courses'); }, [drawer]);   // opens expanded while a course is showing
 
   // the underline spans the padded link box, so it runs 10px past the text on each side (Figma); hover previews it.
   // At xl the links sit centred between the logo and the button group: equal gaps either side, like Figma's 111px/111px
@@ -136,14 +138,29 @@ function Header() {
       {/* mobile drawer: slides in from the right over a dimmed page */}
       <div className={`fixed inset-0 z-50 lg:hidden ${drawer ? '' : 'pointer-events-none'}`} inert={!drawer}>
         <div onClick={() => setDrawer(false)} className={`absolute inset-0 bg-black/40 transition-opacity ${drawer ? 'opacity-100' : 'opacity-0'}`} />
-        <nav className={`absolute right-0 top-0 flex h-full w-[min(82vw,320px)] flex-col bg-white px-6 pb-8 pt-4 shadow-2xl transition-transform duration-300 ${drawer ? 'translate-x-0' : 'translate-x-full'}`}>
+        <nav className={`absolute right-0 top-0 flex h-full w-[min(82vw,320px)] flex-col overflow-y-auto overscroll-contain bg-white px-6 pb-8 pt-4 shadow-2xl transition-transform duration-300 ${drawer ? 'translate-x-0' : 'translate-x-full'}`}>
           <div className="mb-4 flex items-center justify-between">
             <img src="/img/logo.png" alt="" className="h-11 w-11 object-contain" />
             <button type="button" onClick={() => setDrawer(false)} className="-mr-2 p-2" aria-label="Close menu"><X className="h-6 w-6" /></button>
           </div>
-          {NAV.map(([to, label]) => (
+          {NAV.map(([to, label]) => to !== '/courses' ? (
             <NavLink key={to} to={to} end={to === '/'}
               className={({ isActive }) => `block border-b border-black/5 py-3.5 text-[16px] ${isActive ? 'text-[#7d8f57]' : 'text-[#2b2b2b]'}`}>{label}</NavLink>
+          ) : (
+            /* the desktop Courses dropdown, as an accordion: same courses, same order */
+            <div key={to} className="border-b border-black/5">
+              <button type="button" onClick={() => setCoursesOpen(o => !o)} aria-expanded={coursesOpen} aria-controls="drawer-courses"
+                className={`flex w-full items-center justify-between py-3.5 text-left text-[16px] ${pathname === to ? 'text-[#7d8f57]' : 'text-[#2b2b2b]'}`}>
+                {label}<ChevronDown className={`h-5 w-5 transition-transform ${coursesOpen ? 'rotate-180' : ''}`} />
+              </button>
+              <div id="drawer-courses" hidden={!coursesOpen} className="pb-2">
+                {COURSE_MENU.map(([t, href]) => {
+                  const on = pathname === to && (hash || '#gp') === href.slice(href.indexOf('#'));
+                  return <Link key={href} to={href} aria-current={on ? 'page' : undefined}
+                    className={`block rounded-lg border-l-2 py-2.5 pl-3 pr-2 text-[14.5px] leading-snug ${on ? 'border-[#7d8f57] bg-[#f6faf0] text-[#7d8f57]' : 'border-transparent text-[#4a4a4a]'}`}>{t}</Link>;
+                })}
+              </div>
+            </div>
           ))}
           <div className="mt-6 flex flex-wrap gap-3"><StorePill kind="apple" /><StorePill kind="play" /></div>
         </nav>
