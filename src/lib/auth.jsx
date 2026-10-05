@@ -86,7 +86,7 @@ export function AuthProvider({ children }) {
 
   const onCredential = useRef();
   onCredential.current = async res => {
-    if (!res?.credential) return say('Google sign-in was cancelled.', true);
+    if (!res?.credential) return;   // closed or cancelled popup: nothing to report, the modal stays as it was
     setGoogleBusy(true);
     const r = await api('/api/auth/google', { method: 'POST', body: JSON.stringify({ credential: res.credential }) });
     setGoogleBusy(false);
@@ -117,14 +117,9 @@ export function AuthProvider({ children }) {
     say('');
     const picker = document.querySelector(`#${GIS_HOST} [role="button"]`);
     if (picker) return picker.click();
-    // no rendered button (blocked or hidden) — fall back to One Tap. A dismissed or skipped prompt is a cancel,
-    // not a failure: say so instead of leaving the modal looking stuck. FedCM trims this notification down, so
-    // every moment method is treated as optional.
-    window.google.accounts.id.prompt(n => {
-      try {
-        if (n?.isDismissedMoment?.() || n?.isSkippedMoment?.()) say('Google sign-in was cancelled — use your email instead.', true);
-      } catch { /* FedCM drops these methods; nothing to report */ }
-    });
+    // no rendered button (blocked or hidden) — fall back to One Tap. A dismissed prompt is the user's choice, not
+    // an error, so it is left unreported.
+    window.google.accounts.id.prompt();
   }
 
   return (
@@ -164,7 +159,7 @@ function LoginModal({ forPurchase, msg, say, onClose, onGoogle, googleBusy, onLo
         const r = await api('/api/auth/otp', { method: 'POST', body: JSON.stringify({ email: address }) });
         if (!r?.ok) return say(r?.data?.error || 'Could not send the code — please try again.', true);
         setChallenge(r.data.challenge);
-        return say(`We sent a 6-digit code to ${address}.` + (r.data.devCode ? ` Test code: ${r.data.devCode}` : ''));
+        return say(`We sent a 6-digit code to ${address}.`);
       }
       const r = await api('/api/auth/verify', { method: 'POST', body: JSON.stringify({ challenge, otp: otp.trim() }) });
       if (!r?.ok) return say(r?.data?.error || 'Login failed — please try again.', true);
@@ -196,9 +191,9 @@ function LoginModal({ forPurchase, msg, say, onClose, onGoogle, googleBusy, onLo
               <input id="auth-otp" inputMode="numeric" autoComplete="one-time-code" maxLength={6} className="auth-input" placeholder="••••••" autoFocus
                 value={otp} onChange={e => setOtp(e.target.value)} />
             </>}
-            <button type="submit" className="btn-grad auth-btn" disabled={busy}>Login</button>
+            {msg && <p role="status" className="auth-msg" style={{ color: msg.bad ? '#b42318' : '#4b5b33' }}>{msg.text}</p>}
+            <button type="submit" className="btn-grad auth-btn" disabled={busy}>{challenge ? 'Verify & Login' : 'Login'}</button>
           </form>
-          {msg && <p role="status" className="auth-msg" style={{ color: msg.bad ? '#b42318' : '#4b5b33' }}>{msg.text}</p>}
           <p className="auth-terms">By continuing you agree to our Terms of Use and Privacy Policy.</p>
         </div>
       </div>
