@@ -29,6 +29,8 @@ export function AuthProvider({ children }) {
   const [googleBusy, setGoogleBusy] = useState(false);
   const pending = useRef(null);               // what to do once signed in
   const gisReady = useRef(false);
+  const gisInit = useRef(false);             // StrictMode/remounts must not load + initialize GIS twice
+  const prompting = useRef(false);           // FedCM allows one navigator.credentials.get at a time
 
   const setUser = u => { ls.set(USER_KEY, u); setUserState(u); };
   const say = (text, bad) => setMsg(text ? { text, bad } : null);
@@ -62,6 +64,7 @@ export function AuthProvider({ children }) {
     const onReject = e => {
       if (e.reason?.name !== 'AbortError' && e.reason?.name !== 'NotAllowedError') return;
       e.preventDefault();
+      prompting.current = false;
       setGoogleBusy(false);
     };
     addEventListener('unhandledrejection', onReject);
@@ -69,7 +72,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   // closing the modal takes any open One Tap prompt down with it, rather than leaving it floating over the page
-  const close = () => { pending.current = null; setModal(null); window.google?.accounts?.id?.cancel?.(); };
+  const close = () => { pending.current = null; prompting.current = false; setModal(null); window.google?.accounts?.id?.cancel?.(); };
   function requireLogin(onDone, forPurchase = false) {
     pending.current = onDone;
     say('');
@@ -86,6 +89,7 @@ export function AuthProvider({ children }) {
 
   const onCredential = useRef();
   onCredential.current = async res => {
+    prompting.current = false;
     if (!res?.credential) return;   // closed or cancelled popup: nothing to report, the modal stays as it was
     setGoogleBusy(true);
     const r = await api('/api/auth/google', { method: 'POST', body: JSON.stringify({ credential: res.credential }) });
@@ -95,6 +99,8 @@ export function AuthProvider({ children }) {
   };
 
   useEffect(() => {   // best effort: a failure just leaves the Google button reporting it
+    if (gisInit.current) return;
+    gisInit.current = true;
     (async () => {
       const r = await api('/api/config');
       const clientId = r?.data?.googleClientId;
@@ -116,10 +122,12 @@ export function AuthProvider({ children }) {
     if (!gisReady.current) return say('Google sign-in is not available right now — use your email instead.', true);
     say('');
     const picker = document.querySelector(`#${GIS_HOST} [role="button"]`);
-    if (picker) return picker.click();
+    if (picker) return picker.click();   // popup flow, no FedCM request involved
     // no rendered button (blocked or hidden) — fall back to One Tap. A dismissed prompt is the user's choice, not
-    // an error, so it is left unreported.
-    window.google.accounts.id.prompt();
+    // an error, so it is left unreported. Only one FedCM request may be open; a second would reject with NotAllowedError.
+    if (prompting.current) return;
+    prompting.current = true;
+    window.google.accounts.id.prompt(n => { if (n.isDismissedMoment?.() || n.isSkippedMoment?.()) prompting.current = false; });
   }
 
   return (
