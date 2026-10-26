@@ -57,12 +57,13 @@ export function AuthProvider({ children }) {
   }, [user?.token]);
 
   /* FedCM aborts the browser's credentials request whenever the Google prompt is dismissed — by the user, or by
-     our own cancel() below. GIS doesn't catch its own rejection, so it lands in the console as an unhandled
-     AbortError. Our fetches never reject (api() catches its own aborts), so swallowing just this one pair of
-     DOMException names keeps a cancelled sign-in quiet without hiding a real failure. */
+     our own cancel() below. Should a GIS version leave that rejection unhandled, this keeps it to one warning and
+     clears the guard. Our fetches never reject (api() catches its own aborts), so only these FedCM DOMException
+     names are swallowed. */
   useEffect(() => {
     const onReject = e => {
-      if (e.reason?.name !== 'AbortError' && e.reason?.name !== 'NotAllowedError') return;
+      if (!['AbortError', 'NotAllowedError', 'NetworkError'].includes(e.reason?.name)) return;
+      console.warn('[auth] Google sign-in prompt ended:', e.reason.name, e.reason.message);
       e.preventDefault();
       prompting.current = false;
       setGoogleBusy(false);
@@ -90,11 +91,17 @@ export function AuthProvider({ children }) {
   const onCredential = useRef();
   onCredential.current = async res => {
     prompting.current = false;
-    if (!res?.credential) return;   // closed or cancelled popup: nothing to report, the modal stays as it was
+    if (!res?.credential) return console.info('[auth] Google returned no credential (closed or cancelled)');
+    console.info('[auth] Google credential received via', res.select_by, '— exchanging with /api/auth/google');
     setGoogleBusy(true);
+    // api() never rejects: a network failure or timeout comes back as null
     const r = await api('/api/auth/google', { method: 'POST', body: JSON.stringify({ credential: res.credential }) });
     setGoogleBusy(false);
-    if (!r?.ok) return say(r?.data?.error || 'Google sign-in failed — please try again.', true);
+    if (!r?.ok) {
+      console.error('[auth] Google token exchange failed:', r ? `${r.status} ${r.data?.error || ''}` : 'backend unreachable');
+      return say(r?.data?.error || 'Google sign-in failed — please try again.', true);
+    }
+    console.info('[auth] Google sign-in complete');
     finishLogin(r.data);
   };
 
@@ -115,7 +122,7 @@ export function AuthProvider({ children }) {
       document.body.appendChild(host);
       window.google.accounts.id.renderButton(host, { type: 'standard', theme: 'outline', size: 'large' });
       gisReady.current = true;
-    })().catch(() => {});
+    })().catch(e => console.warn('[auth] Google sign-in unavailable:', e?.message));
   }, []);
 
   function googleSignIn() {   // stays synchronous so the popup keeps the click
@@ -127,9 +134,14 @@ export function AuthProvider({ children }) {
     // an error, so it is left unreported. Only one FedCM request may be open; a second would reject with NotAllowedError.
     if (prompting.current) return;
     prompting.current = true;
-    // no moment callback: GSI warns its status methods go away under FedCM; a dismissal rejects with AbortError,
-    // which the unhandledrejection handler above uses to clear the guard
-    window.google.accounts.id.prompt();
+    // GSI catches and logs FedCM rejections itself (AbortError on dismiss, NetworkError when the browser has no Google
+    // session or the origin isn't authorised), so the moment callback is what reliably clears the guard. getMomentType
+    // is one of the status methods FedCM keeps; anything but 'display' means the prompt is over.
+    window.google.accounts.id.prompt(n => {
+      const type = n.getMomentType?.();
+      console.info('[auth] Google prompt moment:', type);
+      if (type !== 'display') prompting.current = false;
+    });
   }
 
   return (
