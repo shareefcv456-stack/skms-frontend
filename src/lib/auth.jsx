@@ -12,9 +12,9 @@ export const useAuth = () => useContext(Auth);
 
 const storedUser = () => { const u = ls.get(USER_KEY); return u?.exp > Date.now() ? u : null; };
 
-/* Google's own button, rendered offscreen once the page loads. Clicking it opens the account picker, which has to
-   happen inside the user's click — an `await` between the click and the popup would get it blocked. */
-const GIS_HOST = 'g-picker';
+/* Google sign-in uses the OAuth2 token client: requestAccessToken() opens Google's full account-chooser popup — no
+   One Tap, no FedCM. The popup has to open inside the user's click, so the client is created up front and the click
+   handler stays synchronous. */
 const loadGis = () => new Promise((ok, fail) => {
   const el = Object.assign(document.createElement('script'), { src: 'https://accounts.google.com/gsi/client', async: true, onload: ok });
   el.onerror = () => fail(new Error('gsi'));
@@ -28,9 +28,8 @@ export function AuthProvider({ children }) {
   const [msg, setMsg] = useState(null);       // { text, bad }
   const [googleBusy, setGoogleBusy] = useState(false);
   const pending = useRef(null);               // what to do once signed in
-  const gisReady = useRef(false);
+  const tokenClient = useRef(null);
   const gisInit = useRef(false);             // StrictMode/remounts must not load + initialize GIS twice
-  const prompting = useRef(false);           // FedCM allows one navigator.credentials.get at a time
 
   const setUser = u => { ls.set(USER_KEY, u); setUserState(u); };
   const say = (text, bad) => setMsg(text ? { text, bad } : null);
@@ -56,24 +55,7 @@ export function AuthProvider({ children }) {
     refreshAccount(user?.token);
   }, [user?.token]);
 
-  /* FedCM aborts the browser's credentials request whenever the Google prompt is dismissed — by the user, or by
-     our own cancel() below. Should a GIS version leave that rejection unhandled, this keeps it to one warning and
-     clears the guard. Our fetches never reject (api() catches its own aborts), so only these FedCM DOMException
-     names are swallowed. */
-  useEffect(() => {
-    const onReject = e => {
-      if (!['AbortError', 'NotAllowedError', 'NetworkError'].includes(e.reason?.name)) return;
-      console.warn('[auth] Google sign-in prompt ended:', e.reason.name, e.reason.message);
-      e.preventDefault();
-      prompting.current = false;
-      setGoogleBusy(false);
-    };
-    addEventListener('unhandledrejection', onReject);
-    return () => removeEventListener('unhandledrejection', onReject);
-  }, []);
-
-  // closing the modal takes any open One Tap prompt down with it, rather than leaving it floating over the page
-  const close = () => { pending.current = null; prompting.current = false; setModal(null); window.google?.accounts?.id?.cancel?.(); };
+  const close = () => { pending.current = null; setModal(null); };
   function requireLogin(onDone, forPurchase = false) {
     pending.current = onDone;
     say('');
@@ -88,14 +70,16 @@ export function AuthProvider({ children }) {
     done?.(u);
   }
 
-  const onCredential = useRef();
-  onCredential.current = async res => {
-    prompting.current = false;
-    if (!res?.credential) return console.info('[auth] Google returned no credential (closed or cancelled)');
-    console.info('[auth] Google credential received via', res.select_by, '— exchanging with /api/auth/google');
-    setGoogleBusy(true);
+  const onToken = useRef();
+  onToken.current = async res => {
+    if (!res?.access_token) {
+      setGoogleBusy(false);
+      console.warn('[auth] Google returned no access token:', res?.error, res?.error_description || '');
+      return say('Google sign-in failed — please try again.', true);
+    }
+    console.info('[auth] Google access token received — exchanging with /api/auth/google');
     // api() never rejects: a network failure or timeout comes back as null
-    const r = await api('/api/auth/google', { method: 'POST', body: JSON.stringify({ credential: res.credential }) });
+    const r = await api('/api/auth/google', { method: 'POST', body: JSON.stringify({ accessToken: res.access_token }) });
     setGoogleBusy(false);
     if (!r?.ok) {
       console.error('[auth] Google token exchange failed:', r ? `${r.status} ${r.data?.error || ''}` : 'backend unreachable');
@@ -111,38 +95,30 @@ export function AuthProvider({ children }) {
     (async () => {
       const r = await api('/api/config');
       const clientId = r?.data?.googleClientId;
-      if (!clientId) return;
+      if (!clientId) return console.warn('[auth] no Google client id from /api/config');
       await loadGis();
-      window.google.accounts.id.initialize({
-        client_id: clientId, auto_select: false, cancel_on_tap_outside: true, use_fedcm_for_prompt: true,
-        callback: res => onCredential.current(res),
+      tokenClient.current = window.google.accounts.oauth2.initTokenClient({
+        client_id: clientId,
+        scope: 'openid email profile',
+        prompt: 'select_account',   // always show the account chooser, even with one signed-in account
+        callback: res => onToken.current(res),
+        // popup closed by the user, or blocked: not an error worth a red message, just re-enable the button
+        error_callback: e => {
+          console.info('[auth] Google popup ended:', e?.type);
+          setGoogleBusy(false);
+          if (e?.type === 'popup_failed_to_open') say('Your browser blocked the Google popup — allow popups or use your email.', true);
+        },
       });
-      const host = Object.assign(document.createElement('div'), { id: GIS_HOST });
-      host.style.cssText = 'position:fixed;left:-9999px;top:0;opacity:0';
-      document.body.appendChild(host);
-      window.google.accounts.id.renderButton(host, { type: 'standard', theme: 'outline', size: 'large' });
-      gisReady.current = true;
     })().catch(e => console.warn('[auth] Google sign-in unavailable:', e?.message));
   }, []);
 
   function googleSignIn() {   // stays synchronous so the popup keeps the click
-    if (!gisReady.current) return say('Google sign-in is not available right now — use your email instead.', true);
+    if (!tokenClient.current) return say('Google sign-in is not available right now — use your email instead.', true);
     say('');
-    const picker = document.querySelector(`#${GIS_HOST} [role="button"]`);
-    if (picker) return picker.click();   // popup flow, no FedCM request involved
-    // no rendered button (blocked or hidden) — fall back to One Tap. A dismissed prompt is the user's choice, not
-    // an error, so it is left unreported. Only one FedCM request may be open; a second would reject with NotAllowedError.
-    if (prompting.current) return;
-    prompting.current = true;
-    // GSI catches and logs FedCM rejections itself (AbortError on dismiss, NetworkError when the browser has no Google
-    // session or the origin isn't authorised), so the moment callback is what reliably clears the guard. getMomentType
-    // is one of the status methods FedCM keeps; anything but 'display' means the prompt is over.
-    window.google.accounts.id.prompt(n => {
-      const type = n.getMomentType?.();
-      console.info('[auth] Google prompt moment:', type);
-      if (type !== 'display') prompting.current = false;
-    });
+    setGoogleBusy(true);
+    tokenClient.current.requestAccessToken();
   }
+
 
   return (
     <Auth.Provider value={{ user, account, refreshAccount, updateAccount, requireLogin, logout: () => setUser(null) }}>
