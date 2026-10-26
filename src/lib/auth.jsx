@@ -127,7 +127,9 @@ export function AuthProvider({ children }) {
     // an error, so it is left unreported. Only one FedCM request may be open; a second would reject with NotAllowedError.
     if (prompting.current) return;
     prompting.current = true;
-    window.google.accounts.id.prompt(n => { if (n.isDismissedMoment?.() || n.isSkippedMoment?.()) prompting.current = false; });
+    // no moment callback: GSI warns its status methods go away under FedCM; a dismissal rejects with AbortError,
+    // which the unhandledrejection handler above uses to clear the guard
+    window.google.accounts.id.prompt();
   }
 
   return (
