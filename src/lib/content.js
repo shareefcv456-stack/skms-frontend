@@ -27,7 +27,7 @@ export const DEFAULTS = {
      plus a fallback copy of the database values for when it can't be reached.
      program: id (plans.html#id), label, courseId (app `courses` row), and home-card promo wording (all optional):
      badge, flag, early (note in the price box), tone — never a price.
-     card: planId, name (shown only on named cards), price (INR), durationDays, duration (access label), features[],
+     card: planId, name (shown only on named cards), price (USD), durationDays, duration (access label), features[],
      was, note, flag, sub, tone (grey|blue|pink), dark */
   plans: [
     { id: 'gp', label: 'GP License Exam', courseId: 22, cards: [
@@ -119,7 +119,7 @@ export const COURSE_MENU = [
   ['Final year practical exam demo -AI VIDEOS', '/courses#final'],
 ];
 
-export const money = n => '₹' + Number(n || 0).toLocaleString('en-IN', { maximumFractionDigits: 2 });   // Indian grouping: ₹1,50,000
+export const money = n => '$' + Number(n || 0).toLocaleString('en-US', { maximumFractionDigits: 2 });   // $150,000
 export const planLabel = (group, card) => [group.label, card.name || card.duration].filter(Boolean).join(' — ');
 export const initials = name => String(name ?? '').replace(/^Dr\.?\s*/i, '').split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase() || '?';
 
